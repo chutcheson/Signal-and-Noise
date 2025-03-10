@@ -854,9 +854,6 @@ function updateRoundHistory() {
   // Clear current history
   elements.roundHistory.innerHTML = '';
   
-  // Keep track of active round 
-  const currentRoundIndex = gameState.currentRound - 1;
-  
   // Store the most recent round for later display
   const mostRecentRound = gameState.rounds[gameState.rounds.length - 1];
   
@@ -929,7 +926,7 @@ function updateRoundHistory() {
     
     const roundWord = document.createElement('div');
     roundWord.className = 'round-word';
-    roundWord.textContent = gameState.currentRoundData.secret || gameState.secret;
+    roundWord.textContent = gameState.currentRoundData.secret;
     
     const roundStatus = document.createElement('div');
     roundStatus.className = 'round-result in-progress';
