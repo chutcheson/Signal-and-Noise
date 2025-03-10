@@ -443,8 +443,13 @@ label {
 
 .message.thinking {
   border: 1px dashed var(--text-color);
-  background-color: transparent;
-  opacity: 0.8;
+  background-color: rgba(0, 0, 0, 0.02); /* Very subtle background */
+  opacity: 0.75;
+  align-self: flex-end; /* Right-aligned */
+  max-width: 50%; /* Slightly narrower than regular messages */
+  margin-right: 10px; /* Match indentation of other right-aligned messages */
+  font-style: italic; /* Italic text like reasoning */
+  transform-origin: bottom right; /* Animation from right side */
 }
 
 .message.reasoning {
