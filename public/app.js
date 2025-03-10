@@ -31,7 +31,6 @@ const elements = {
   },
   buttons: {
     startGame: document.getElementById('start-game'),
-    nextPhase: document.getElementById('next-phase'),
     newGame: document.getElementById('new-game')
   },
   game: {
@@ -241,22 +240,25 @@ async function getNewSecret() {
 async function handleNextPhase() {
   const currentPhase = gameState.currentPhase;
   
-  // Hide the next button during processing
-  elements.buttons.nextPhase.disabled = true;
+  // Create a visual indicator that processing is happening
+  const statusIndicator = document.createElement('div');
+  statusIndicator.textContent = `Processing ${currentPhase} phase...`;
+  statusIndicator.className = 'status-indicator';
+  document.body.appendChild(statusIndicator);
   
   try {
     if (currentPhase === 'sender') {
       // Sender phase - generate sender message
       await handleSenderPhase();
       // Auto-proceed to next phase after a short delay
-      setTimeout(() => handleNextPhase(), 1000);
+      setTimeout(() => handleNextPhase(), 1500);
     } else if (currentPhase === 'observer') {
       // Observer phase - generate observer guess
       await handleObserverPhase();
       // Observer might win the round, so we don't auto-proceed here
       // If handleObserverPhase didn't end the round, we'll proceed automatically
       if (gameState.currentPhase === 'receiver') {
-        setTimeout(() => handleNextPhase(), 1000);
+        setTimeout(() => handleNextPhase(), 1500);
       }
     } else if (currentPhase === 'receiver') {
       // Receiver phase - generate receiver guess
@@ -264,21 +266,39 @@ async function handleNextPhase() {
       // Receiver might win the round or we might hit max loops
       // If we're moving to receiver_response, proceed automatically
       if (gameState.currentPhase === 'receiver_response') {
-        setTimeout(() => handleNextPhase(), 1000);
+        setTimeout(() => handleNextPhase(), 1500);
       }
     } else if (currentPhase === 'receiver_response') {
       // Receiver response phase - generate receiver response message
       await handleReceiverResponsePhase();
       // Auto-proceed back to sender phase
-      setTimeout(() => handleNextPhase(), 1000);
+      setTimeout(() => handleNextPhase(), 1500);
     }
   } catch (error) {
     console.error('Error in phase handling:', error);
-    alert('An error occurred. See console for details.');
+    console.log('Attempting to continue to next phase despite error');
+    // Try to advance anyway after a delay
+    setTimeout(() => {
+      // Determine which phase to go to next based on current state
+      if (gameState.currentPhase === 'sender') {
+        gameState.currentPhase = 'observer';
+        handleNextPhase();
+      } else if (gameState.currentPhase === 'observer') {
+        gameState.currentPhase = 'receiver';
+        handleNextPhase();
+      } else if (gameState.currentPhase === 'receiver') {
+        gameState.currentPhase = 'receiver_response';
+        handleNextPhase();
+      } else if (gameState.currentPhase === 'receiver_response') {
+        gameState.currentPhase = 'sender';
+        gameState.currentLoop++;
+        handleNextPhase();
+      }
+    }, 2000);
+  } finally {
+    // Remove the status indicator
+    document.body.removeChild(statusIndicator);
   }
-  
-  // Re-enable the button for manual intervention if needed
-  elements.buttons.nextPhase.disabled = false;
 }
 
 // Handle sender phase
@@ -584,30 +604,25 @@ async function finalizeRound(winner) {
   
   // Check if game is over
   if (gameState.currentRound >= gameState.totalRounds) {
-    // Game over - show results screen
-    elements.buttons.nextPhase.textContent = 'View Final Results';
-    elements.buttons.nextPhase.onclick = showResults;
-    
-    // After a delay, show results automatically
+    // Game over - show results screen after a delay
     setTimeout(() => showResults(), 3000);
   } else {
     // Prepare for next round
     gameState.currentRound++;
-    elements.buttons.nextPhase.textContent = 'Start Next Round';
     
-    // Store the original button handler
-    const originalHandler = elements.buttons.nextPhase.onclick;
-    
-    // Set up a temporary handler
-    elements.buttons.nextPhase.onclick = async () => {
-      elements.buttons.nextPhase.onclick = handleNextPhase;
-      await startRound();
-    };
+    // Display message about next round
+    const nextRoundMessage = document.createElement('div');
+    nextRoundMessage.className = 'message-box';
+    nextRoundMessage.innerHTML = `
+      <div class="message-header">Game Progress</div>
+      <div class="message-content">
+        Starting round ${gameState.currentRound} in a few seconds...
+      </div>
+    `;
+    elements.game.messageContainer.appendChild(nextRoundMessage);
     
     // Automatically start next round after a delay
     setTimeout(async () => {
-      // Reset to original handler
-      elements.buttons.nextPhase.onclick = handleNextPhase;
       await startRound();
     }, 3000);
   }
