@@ -761,12 +761,48 @@ function isScrolledToBottom() {
 function smoothScrollToBottom() {
   // Only scroll if user is already at or near the bottom
   if (isScrolledToBottom()) {
-    // Use smooth scrolling when available
+    // Use smooth scrolling when available, with different behavior based on proximity
     if ('scrollBehavior' in document.documentElement.style) {
-      elements.messageArea.scrollTo({
-        top: elements.messageArea.scrollHeight,
-        behavior: 'smooth'
-      });
+      // Check how close to bottom
+      const scrollPosition = elements.messageArea.scrollTop + elements.messageArea.clientHeight;
+      const scrollHeight = elements.messageArea.scrollHeight;
+      const distanceFromBottom = scrollHeight - scrollPosition;
+      
+      // Very close to bottom (within 20px) - use immediate jump for seamless experience
+      if (distanceFromBottom < 20) {
+        elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
+      } 
+      // Moderately close - use faster animation
+      else if (distanceFromBottom < 100) {
+        elements.messageArea.scrollTo({
+          top: elements.messageArea.scrollHeight,
+          behavior: 'smooth'
+        });
+      } 
+      // Further away but still in "at bottom" zone - use gentler animation
+      else {
+        const targetScrollTop = elements.messageArea.scrollHeight;
+        
+        // Use a custom animation for more control
+        const startTime = performance.now();
+        const startScrollTop = elements.messageArea.scrollTop;
+        const duration = 400; // Longer animation for smoother feel
+
+        function scrollAnimation(currentTime) {
+          const elapsedTime = currentTime - startTime;
+          if (elapsedTime > duration) {
+            elements.messageArea.scrollTop = targetScrollTop;
+            return;
+          }
+
+          // Ease-out animation curve for natural deceleration
+          const progress = 1 - Math.pow(1 - elapsedTime / duration, 3);
+          elements.messageArea.scrollTop = startScrollTop + (targetScrollTop - startScrollTop) * progress;
+          requestAnimationFrame(scrollAnimation);
+        }
+
+        requestAnimationFrame(scrollAnimation);
+      }
     } else {
       // Fallback for browsers that don't support smooth scrolling
       elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
