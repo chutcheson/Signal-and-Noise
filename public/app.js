@@ -249,7 +249,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         body: JSON.stringify({
           category: gameState.category,
-          messages: gameState.messages
+          messages: gameState.messages,
+          secretWord: gameState.secretWord
         })
       });
       
@@ -260,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (data.success) {
         // Add the observer's guess to the display
-        addMessage('observer', `I guess the secret word is: ${data.guess}`);
+        addMessage('observer', `I think the secret word is "${data.guess}"`);
         
         // Check if the guess is correct
         if (data.isCorrect) {
@@ -305,7 +306,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         body: JSON.stringify({
           category: gameState.category,
-          messages: gameState.messages
+          messages: gameState.messages,
+          secretWord: gameState.secretWord
         })
       });
       
@@ -316,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (data.success) {
         // Add the receiver's guess to the display
-        addMessage('receiver', `I guess the secret word is: ${data.guess}`);
+        addMessage('receiver', `I think the secret word is "${data.guess}"`);
         
         // Check if the guess is correct
         if (data.isCorrect) {

@@ -74,10 +74,9 @@ app.post('/api/sender-message', async (req, res) => {
 // Get a guess from the Observer
 app.post('/api/observer-guess', async (req, res) => {
   try {
-    const { category, messages } = req.body;
+    const { category, messages, secretWord } = req.body;
     
-    // Extract the secret word from the last message to check against
-    const secretWord = req.query.secretWord || messages[0]?.secretWord;
+    console.log(`Observer attempting to guess secret word: ${secretWord}`);
     
     // Call the AI service to get an observer guess
     const { guess, isCorrect } = await apiService.getObserverGuess(category, messages, secretWord);
@@ -99,10 +98,9 @@ app.post('/api/observer-guess', async (req, res) => {
 // Get a guess from the Receiver
 app.post('/api/receiver-guess', async (req, res) => {
   try {
-    const { category, messages } = req.body;
+    const { category, messages, secretWord } = req.body;
     
-    // Extract the secret word from the last message to check against
-    const secretWord = req.query.secretWord || messages[0]?.secretWord;
+    console.log(`Receiver attempting to guess secret word: ${secretWord}`);
     
     // Call the AI service to get a receiver guess
     const { guess, isCorrect } = await apiService.getReceiverGuess(category, messages, secretWord);
