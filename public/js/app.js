@@ -587,10 +587,21 @@ function updateRoundHistory() {
   // Clear current history
   elements.roundHistory.innerHTML = '';
   
+  // Keep track of active round 
+  const currentRoundIndex = gameState.currentRound - 1;
+  
+  // Store the most recent round for later display
+  const mostRecentRound = gameState.rounds[gameState.rounds.length - 1];
+  
   // Add each round
   gameState.rounds.forEach((round, index) => {
     const roundItem = document.createElement('div');
     roundItem.className = 'round-item';
+    
+    // Mark the current round as active
+    if (index === currentRoundIndex) {
+      roundItem.classList.add('active');
+    }
     
     const roundNumber = document.createElement('div');
     roundNumber.className = 'round-number';
@@ -615,8 +626,145 @@ function updateRoundHistory() {
     roundItem.appendChild(roundWord);
     roundItem.appendChild(roundResult);
     
+    // Add click event to show this round's messages
+    roundItem.addEventListener('click', () => {
+      // Remove active class from all items
+      document.querySelectorAll('.round-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Add active class to clicked item
+      roundItem.classList.add('active');
+      
+      // Display the messages from this round
+      displayRoundMessages(round);
+    });
+    
     elements.roundHistory.appendChild(roundItem);
   });
+  
+  // Display the most recent round's messages if available
+  if (mostRecentRound) {
+    displayRoundMessages(mostRecentRound);
+  }
+}
+
+// Display messages from the current active round
+function displayCurrentRoundMessages() {
+  // Clear the message area
+  elements.messageArea.innerHTML = '';
+  
+  // Update game word display
+  elements.gameWord.textContent = gameState.secret;
+  
+  // Add a heading for the current round
+  const roundHeading = document.createElement('div');
+  roundHeading.className = 'message round-heading';
+  roundHeading.innerHTML = `<strong>Current Round (${gameState.currentRound})</strong>`;
+  elements.messageArea.appendChild(roundHeading);
+  
+  // Add each message from the current round
+  gameState.currentRoundData.messages.forEach(msg => {
+    if (msg.role === 'sender') {
+      // Show sender reasoning
+      addMessage('thinking', 'Sender (Reasoning)', msg.reasoning);
+      
+      // Show sender message
+      addMessage('sender', 'Sender', msg.content);
+    } 
+    else if (msg.role === 'observer') {
+      // Show observer reasoning
+      addMessage('thinking', 'Observer (Reasoning)', msg.reasoning);
+      
+      // Show observer guess with correct/incorrect indicator
+      addGuessMessage('observer', 'Observer', msg.content, msg.correct);
+    } 
+    else if (msg.role === 'receiver-guess') {
+      // Show receiver reasoning
+      addMessage('thinking', 'Receiver (Reasoning)', msg.reasoning);
+      
+      // Show receiver guess with correct/incorrect indicator
+      addGuessMessage('receiver', 'Receiver', msg.content, msg.correct);
+    } 
+    else if (msg.role === 'receiver') {
+      // Show receiver reasoning
+      addMessage('thinking', 'Receiver (Reasoning)', msg.reasoning);
+      
+      // Show receiver message
+      addMessage('receiver', 'Receiver', msg.content);
+    }
+  });
+}
+
+// Display messages from a specific round
+function displayRoundMessages(round) {
+  // Clear the message area
+  elements.messageArea.innerHTML = '';
+  
+  // Update the game word display to show this round's secret
+  elements.gameWord.textContent = round.secret;
+  
+  // Add a "Return to Current Round" button if we're viewing history during an active game
+  if (gameState.currentRoundData.messages.length > 0 && round !== gameState.currentRoundData) {
+    const returnButton = document.createElement('button');
+    returnButton.className = 'secondary-btn return-to-current';
+    returnButton.textContent = 'Return to Current Round';
+    returnButton.style.alignSelf = 'center';
+    returnButton.style.margin = '10px 0';
+    
+    returnButton.addEventListener('click', () => {
+      // Display current round's messages
+      displayCurrentRoundMessages();
+      
+      // Update active state in round history
+      document.querySelectorAll('.round-item').forEach((item, index) => {
+        item.classList.toggle('active', index === gameState.currentRound - 1);
+      });
+    });
+    
+    elements.messageArea.appendChild(returnButton);
+  }
+  
+  // Display a heading for the round
+  const roundHeading = document.createElement('div');
+  roundHeading.className = 'message round-heading';
+  roundHeading.innerHTML = `<strong>Round ${gameState.rounds.indexOf(round) + 1} Messages</strong>`;
+  elements.messageArea.appendChild(roundHeading);
+  
+  // Add each message in the round
+  round.messages.forEach(msg => {
+    if (msg.role === 'sender') {
+      // Show sender reasoning
+      addMessage('thinking', 'Sender (Reasoning)', msg.reasoning);
+      
+      // Show sender message
+      addMessage('sender', 'Sender', msg.content);
+    } 
+    else if (msg.role === 'observer') {
+      // Show observer reasoning
+      addMessage('thinking', 'Observer (Reasoning)', msg.reasoning);
+      
+      // Show observer guess with correct/incorrect indicator
+      addGuessMessage('observer', 'Observer', msg.content, msg.correct);
+    } 
+    else if (msg.role === 'receiver-guess') {
+      // Show receiver reasoning
+      addMessage('thinking', 'Receiver (Reasoning)', msg.reasoning);
+      
+      // Show receiver guess with correct/incorrect indicator
+      addGuessMessage('receiver', 'Receiver', msg.content, msg.correct);
+    } 
+    else if (msg.role === 'receiver') {
+      // Show receiver reasoning
+      addMessage('thinking', 'Receiver (Reasoning)', msg.reasoning);
+      
+      // Show receiver message
+      addMessage('receiver', 'Receiver', msg.content);
+    }
+  });
+  
+  // Scroll to top
+  elements.messageArea.scrollTop = 0;
 }
 
 // Show an error message
