@@ -13,12 +13,12 @@
       <h1>Signal & Noise</h1>
       <div class="score-container">
         <div class="team-score">
-          <p class="team-name">Sender/Receiver</p>
+          <p class="team-name">Model One</p>
           <p class="score" id="sender-receiver-score">0</p>
         </div>
         <p class="score-divider">:</p>
         <div class="team-score">
-          <p class="team-name">Observer</p>
+          <p class="team-name">Model Two</p>
           <p class="score" id="observer-score">0</p>
         </div>
       </div>
@@ -28,7 +28,7 @@
     <div id="setup-screen" class="game-setup">
       <h2>Game Setup</h2>
       <p class="info-text">
-        In this game, the Sender tries to communicate a secret word to the Receiver while preventing the Observer from figuring it out. Select which AI models will play each role.
+        In this game, one model tries to communicate a secret word to itself while preventing the other model from figuring it out. The roles swap each round - in odd rounds, Model One is the Sender/Receiver and Model Two is the Observer. In even rounds, the roles are reversed.
       </p>
       <form class="setup-form" id="setup-form">
         <div class="form-group">

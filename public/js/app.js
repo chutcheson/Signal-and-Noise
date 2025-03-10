@@ -106,8 +106,8 @@ async function loadModels() {
     const data = await response.json();
     
     // Populate model selects
-    populateModelSelect(elements.senderReceiverSelect, data.models);
-    populateModelSelect(elements.observerSelect, data.models);
+    populateModelSelect(elements.modelOneSelect, data.models);
+    populateModelSelect(elements.modelTwoSelect, data.models);
   } catch (error) {
     console.error('Error loading models:', error);
     showError('Failed to load models. Please refresh the page.');
