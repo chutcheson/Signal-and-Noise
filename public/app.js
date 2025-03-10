@@ -112,9 +112,13 @@ function populateModelSelects(models) {
 // Start new game
 async function startGame() {
   // Get game settings
-  gameState.senderReceiverModel = elements.selects.senderReceiverModel.value;
-  gameState.observerModel = elements.selects.observerModel.value;
+  gameState.initialSenderReceiverModel = elements.selects.senderReceiverModel.value;
+  gameState.initialObserverModel = elements.selects.observerModel.value;
   gameState.totalRounds = parseInt(elements.selects.roundCount.value, 10);
+  
+  // Set initial models
+  gameState.senderReceiverModel = gameState.initialSenderReceiverModel;
+  gameState.observerModel = gameState.initialObserverModel;
   
   // Reset game state
   gameState.currentRound = 1;
@@ -123,14 +127,19 @@ async function startGame() {
   
   // Update UI
   elements.game.totalRounds.textContent = gameState.totalRounds;
-  elements.game.srModelDisplay.textContent = getModelDisplayName(gameState.senderReceiverModel);
-  elements.game.oModelDisplay.textContent = getModelDisplayName(gameState.observerModel);
+  updateModelDisplay();
   
   // Switch to game screen
   showScreen('game');
   
   // Start first round
   await startRound();
+}
+
+// Update the model display in the UI
+function updateModelDisplay() {
+  elements.game.srModelDisplay.textContent = getModelDisplayName(gameState.senderReceiverModel);
+  elements.game.oModelDisplay.textContent = getModelDisplayName(gameState.observerModel);
 }
 
 // Get display name for model
@@ -152,6 +161,17 @@ async function startRound() {
   gameState.currentPhase = 'sender';
   gameState.currentHistory = [];
   
+  // Swap models every two rounds (or based on your desired frequency)
+  if (gameState.currentRound % 2 === 0) {
+    // Swap sender/receiver and observer models
+    const temp = gameState.senderReceiverModel;
+    gameState.senderReceiverModel = gameState.observerModel;
+    gameState.observerModel = temp;
+    
+    // Update model display
+    updateModelDisplay();
+  }
+  
   // Update UI
   elements.game.currentRound.textContent = gameState.currentRound;
   elements.game.currentLoop.textContent = gameState.currentLoop;
@@ -163,6 +183,19 @@ async function startRound() {
   
   // Get new secret
   await getNewSecret();
+  
+  // Add round start message
+  const roundInfoElement = document.createElement('div');
+  roundInfoElement.className = 'message-box';
+  roundInfoElement.innerHTML = `
+    <div class="message-header">Round ${gameState.currentRound}</div>
+    <div class="message-content">
+      <strong>Sender/Receiver:</strong> ${getModelDisplayName(gameState.senderReceiverModel)}<br>
+      <strong>Observer:</strong> ${getModelDisplayName(gameState.observerModel)}<br>
+      <strong>Secret Word:</strong> ${gameState.currentSecret}
+    </div>
+  `;
+  elements.game.messageContainer.appendChild(roundInfoElement);
   
   // Wait for user to start the round
   elements.buttons.nextPhase.textContent = 'Start Round';
