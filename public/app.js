@@ -137,8 +137,10 @@ async function startGame() {
   // Switch to game screen
   showScreen('game');
   
-  // Start first round
-  await startRound();
+  // Start first round with a slight delay to allow UI to render
+  setTimeout(async () => {
+    await startRound();
+  }, 500);
 }
 
 // Update the model display in the UI
@@ -212,8 +214,11 @@ async function startRound() {
   `;
   elements.game.messageContainer.appendChild(roundInfoElement);
   
-  // Wait for user to start the round
+  // Update button text but start automatically
   elements.buttons.nextPhase.textContent = 'Start Round';
+  
+  // Automatically start the round after a brief delay
+  setTimeout(() => handleNextPhase(), 2000);
 }
 
 // Get new secret word
@@ -232,28 +237,47 @@ async function getNewSecret() {
   }
 }
 
-// Handle next phase button click
+// Handle phase transitions - automatically proceeds through phases
 async function handleNextPhase() {
   const currentPhase = gameState.currentPhase;
   
   // Hide the next button during processing
   elements.buttons.nextPhase.disabled = true;
   
-  if (currentPhase === 'sender') {
-    // Sender phase - generate sender message
-    await handleSenderPhase();
-  } else if (currentPhase === 'observer') {
-    // Observer phase - generate observer guess
-    await handleObserverPhase();
-  } else if (currentPhase === 'receiver') {
-    // Receiver phase - generate receiver guess
-    await handleReceiverPhase();
-  } else if (currentPhase === 'receiver_response') {
-    // Receiver response phase - generate receiver response message
-    await handleReceiverResponsePhase();
+  try {
+    if (currentPhase === 'sender') {
+      // Sender phase - generate sender message
+      await handleSenderPhase();
+      // Auto-proceed to next phase after a short delay
+      setTimeout(() => handleNextPhase(), 1000);
+    } else if (currentPhase === 'observer') {
+      // Observer phase - generate observer guess
+      await handleObserverPhase();
+      // Observer might win the round, so we don't auto-proceed here
+      // If handleObserverPhase didn't end the round, we'll proceed automatically
+      if (gameState.currentPhase === 'receiver') {
+        setTimeout(() => handleNextPhase(), 1000);
+      }
+    } else if (currentPhase === 'receiver') {
+      // Receiver phase - generate receiver guess
+      await handleReceiverPhase();
+      // Receiver might win the round or we might hit max loops
+      // If we're moving to receiver_response, proceed automatically
+      if (gameState.currentPhase === 'receiver_response') {
+        setTimeout(() => handleNextPhase(), 1000);
+      }
+    } else if (currentPhase === 'receiver_response') {
+      // Receiver response phase - generate receiver response message
+      await handleReceiverResponsePhase();
+      // Auto-proceed back to sender phase
+      setTimeout(() => handleNextPhase(), 1000);
+    }
+  } catch (error) {
+    console.error('Error in phase handling:', error);
+    alert('An error occurred. See console for details.');
   }
   
-  // Re-enable the button
+  // Re-enable the button for manual intervention if needed
   elements.buttons.nextPhase.disabled = false;
 }
 
@@ -563,14 +587,29 @@ async function finalizeRound(winner) {
     // Game over - show results screen
     elements.buttons.nextPhase.textContent = 'View Final Results';
     elements.buttons.nextPhase.onclick = showResults;
+    
+    // After a delay, show results automatically
+    setTimeout(() => showResults(), 3000);
   } else {
     // Prepare for next round
     gameState.currentRound++;
     elements.buttons.nextPhase.textContent = 'Start Next Round';
+    
+    // Store the original button handler
+    const originalHandler = elements.buttons.nextPhase.onclick;
+    
+    // Set up a temporary handler
     elements.buttons.nextPhase.onclick = async () => {
       elements.buttons.nextPhase.onclick = handleNextPhase;
       await startRound();
     };
+    
+    // Automatically start next round after a delay
+    setTimeout(async () => {
+      // Reset to original handler
+      elements.buttons.nextPhase.onclick = handleNextPhase;
+      await startRound();
+    }, 3000);
   }
 }
 

@@ -344,6 +344,17 @@ select {
   border-top: 3px solid var(--text-color);
   text-align: right;
   background-color: var(--card-background);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.control-panel::before {
+  content: 'Game running automatically - click button to manually advance';
+  font-style: italic;
+  color: var(--text-color);
+  opacity: 0.7;
+  font-size: 0.9rem;
 }
 
 /* Message Styles */
