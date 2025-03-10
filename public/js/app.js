@@ -242,7 +242,7 @@ async function startNewRound() {
     outcome: null
   };
   
-  // Update round number display
+  // Update round number display in the game info area
   elements.roundNumber.textContent = gameState.currentRound;
   
   // Only clear and update the message area if user is not viewing a historical round
@@ -956,12 +956,13 @@ function updateRoundHistory() {
     elements.roundHistory.appendChild(currentRoundItem);
   }
   
-  // Make sure the correct round is displayed
+  // Only refresh the display if we're viewing the current round
+  // otherwise we want to keep showing the round the user selected
   if (viewingRoundIndex === -1) {
     // Display current round if that's what we're viewing
     displayCurrentRoundMessages();
   } else if (viewingRoundIndex >= 0 && viewingRoundIndex < gameState.rounds.length) {
-    // Display the specific round we're viewing
+    // Keep displaying the specific round we're viewing
     displayRoundMessages(gameState.rounds[viewingRoundIndex]);
   }
 }
