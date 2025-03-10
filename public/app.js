@@ -45,7 +45,6 @@ const elements = {
     srModelDisplay: document.getElementById('sr-model-display'),
     oModelDisplay: document.getElementById('o-model-display'),
     messageContainer: document.getElementById('message-container'),
-    historyContainer: document.getElementById('history-container'),
     thinkingArea: document.getElementById('thinking-area')
   },
   results: {
@@ -179,7 +178,6 @@ async function startRound() {
   
   // Clear message container
   elements.game.messageContainer.innerHTML = '';
-  elements.game.historyContainer.innerHTML = '';
   
   // Get new secret
   await getNewSecret();
@@ -289,7 +287,6 @@ async function handleSenderPhase() {
     
     // Display message
     displayMessage(messageEntry);
-    updateHistoryPanel(messageEntry);
     
     // Update UI for next phase
     gameState.currentPhase = 'observer';
@@ -346,7 +343,7 @@ async function handleObserverPhase() {
     
     // Display guess
     displayGuess(guessEntry);
-    updateHistoryPanel(guessEntry);
+    // Removed history panel update
     
     // Check if observer guessed correctly
     if (guessEntry.correct) {
@@ -418,7 +415,7 @@ async function handleReceiverPhase() {
     
     // Display guess
     displayGuess(guessEntry);
-    updateHistoryPanel(guessEntry);
+    // Removed history panel update
     
     // Check if receiver guessed correctly
     if (guessEntry.correct) {
@@ -495,7 +492,7 @@ async function handleReceiverResponsePhase() {
     
     // Display message
     displayMessage(messageEntry);
-    updateHistoryPanel(messageEntry);
+    // Removed history panel update
     
     // Increment loop counter and update UI
     gameState.currentLoop++;
@@ -665,33 +662,7 @@ function displayGuess(guessEntry) {
   elements.game.messageContainer.scrollTop = elements.game.messageContainer.scrollHeight;
 }
 
-// Update history panel
-function updateHistoryPanel(entry) {
-  const historyItem = document.createElement('div');
-  historyItem.className = 'history-item';
-  
-  if (entry.type === 'message') {
-    historyItem.innerHTML = `
-      <div class="history-role">${entry.role}:</div>
-      <div class="history-content">${entry.message}</div>
-    `;
-  } else if (entry.type === 'guess') {
-    const resultClass = entry.correct ? 'result-correct' : 'result-incorrect';
-    const resultSymbol = entry.correct ? '✓' : '✗';
-    
-    historyItem.innerHTML = `
-      <div class="history-role">${entry.role} guess:</div>
-      <div class="history-content">
-        ${entry.guess} <span class="${resultClass}">${resultSymbol}</span>
-      </div>
-    `;
-  }
-  
-  elements.game.historyContainer.appendChild(historyItem);
-  
-  // Scroll to bottom
-  elements.game.historyContainer.scrollTop = elements.game.historyContainer.scrollHeight;
-}
+// Removed the history panel functionality
 
 // Show/hide thinking indicator
 function showThinking(show) {
