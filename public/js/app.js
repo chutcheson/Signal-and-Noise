@@ -675,9 +675,14 @@ function updateRoundHistory() {
     elements.roundHistory.appendChild(roundItem);
   });
   
-  // Display the most recent round's messages only if we're not viewing a specific round
+  // When game is in progress, only show most recent round if we're not already viewing a specific round
   if (mostRecentRound && viewingRoundIndex === -1) {
     displayRoundMessages(mostRecentRound);
+  } else if (viewingRoundIndex >= 0 && viewingRoundIndex < gameState.rounds.length) {
+    // If we are viewing a specific round and it still exists, keep it highlighted
+    document.querySelectorAll('.round-item').forEach((item, index) => {
+      item.classList.toggle('active', index === viewingRoundIndex);
+    });
   }
 }
 
