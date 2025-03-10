@@ -748,6 +748,16 @@ label {
   width: 90%;
 }
 
+/* Footer style for game over summary */
+.result-summary.result-footer {
+  position: static;
+  grid-column: 1 / -1;
+  max-width: 100%;
+  width: 100%;
+  margin-top: 20px;
+  z-index: 5;
+}
+
 .result-container {
   background-color: var(--card-background);
   border: 3px solid var(--text-color);
@@ -764,6 +774,37 @@ label {
     95% 100%, 
     0 100%
   );
+}
+
+.result-footer .result-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  padding: 15px 20px;
+}
+
+.result-footer h2 {
+  margin-bottom: 0 !important;
+  flex: 1 0 auto;
+}
+
+.result-footer .final-scores {
+  flex: 2 0 auto;
+  margin: 0 20px !important;
+}
+
+.result-footer #winning-team {
+  flex: 1 0 auto;
+  margin-bottom: 0 !important;
+  text-align: right;
+}
+
+.result-footer .result-actions {
+  flex-basis: 100%;
+  justify-content: flex-end;
+  margin-top: 10px;
 }
 
 .result-actions {

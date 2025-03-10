@@ -181,20 +181,21 @@ function attachEventListeners() {
   // Setup form submission
   elements.setupForm.addEventListener('submit', handleGameStart);
   
-  // Continue viewing button - dismiss summary but keep game visible
-  elements.continueViewingBtn.addEventListener('click', () => {
-    elements.resultSummary.style.display = 'none';
-  });
-  
   // New game button
   elements.newGameBtn.addEventListener('click', () => {
+    // Reset game state
     elements.resultSummary.style.display = 'none';
     elements.gameScreen.style.display = 'none';
     elements.setupScreen.style.display = 'block';
     
+    // Remove result-footer class to clean up
+    elements.resultSummary.classList.remove('result-footer');
+    
     // Remove game-active class to revert to normal layout
     document.querySelector('.app-container').classList.remove('game-active');
   });
+  
+  // Remove the continue viewing button click handler as it's no longer needed
 }
 
 // Handle game start
@@ -630,8 +631,9 @@ function endGame() {
     elements.winningTeam.textContent = "It's a Tie!";
   }
   
-  // Show result summary without blocking the game view
+  // Show result summary as a footer
   elements.resultSummary.style.display = 'block';
+  elements.resultSummary.className = 'result-summary result-footer';
 }
 
 // Add a message to the message area
