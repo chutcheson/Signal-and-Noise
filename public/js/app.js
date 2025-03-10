@@ -157,6 +157,9 @@ async function handleGameStart(event) {
   gameState.scores = { modelOne: 0, modelTwo: 0 };
   gameState.rounds = [];
   
+  // Reset viewing index to follow current round
+  viewingRoundIndex = -1;
+  
   // Update UI
   elements.setupScreen.style.display = 'none';
   elements.gameScreen.style.display = 'block';
@@ -582,6 +585,9 @@ function removeThinkingMessages() {
   thinkingMessages.forEach(msg => msg.remove());
 }
 
+// Track which round is being viewed
+let viewingRoundIndex = -1; // -1 means viewing the current round
+
 // Update the round history panel
 function updateRoundHistory() {
   // Clear current history
@@ -598,8 +604,9 @@ function updateRoundHistory() {
     const roundItem = document.createElement('div');
     roundItem.className = 'round-item';
     
-    // Mark the current round as active
-    if (index === currentRoundIndex) {
+    // Mark the current round as active only if we're not viewing a specific round
+    if ((viewingRoundIndex === -1 && index === currentRoundIndex) || 
+        index === viewingRoundIndex) {
       roundItem.classList.add('active');
     }
     
@@ -636,6 +643,9 @@ function updateRoundHistory() {
       // Add active class to clicked item
       roundItem.classList.add('active');
       
+      // Update the viewing round index
+      viewingRoundIndex = index;
+      
       // Display the messages from this round
       displayRoundMessages(round);
     });
@@ -643,8 +653,8 @@ function updateRoundHistory() {
     elements.roundHistory.appendChild(roundItem);
   });
   
-  // Display the most recent round's messages if available
-  if (mostRecentRound) {
+  // Display the most recent round's messages only if we're not viewing a specific round
+  if (mostRecentRound && viewingRoundIndex === -1) {
     displayRoundMessages(mostRecentRound);
   }
 }
@@ -713,6 +723,9 @@ function displayRoundMessages(round) {
     returnButton.style.margin = '10px 0';
     
     returnButton.addEventListener('click', () => {
+      // Reset the viewing index to indicate we're viewing the current round
+      viewingRoundIndex = -1;
+      
       // Display current round's messages
       displayCurrentRoundMessages();
       
