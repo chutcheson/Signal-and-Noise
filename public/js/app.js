@@ -275,12 +275,12 @@ async function runSenderPhase() {
     
     const data = await response.json();
     
-    // Remove thinking message
-    removeThinkingMessages();
+    // Remove temporary thinking/loading messages only
+    removeTempThinkingMessages();
     
     // Add sender message and reasoning to UI only if viewing current round
     if (viewingRoundIndex === -1) {
-      addMessage('thinking', 'Sender (Reasoning)', data.reasoning);
+      addMessage('reasoning', 'Sender (Reasoning)', data.reasoning);
       addMessage('sender', 'Sender', data.message);
     }
     
@@ -327,12 +327,12 @@ async function runObserverPhase(senderMessage) {
     
     const data = await response.json();
     
-    // Remove thinking message
-    removeThinkingMessages();
+    // Remove temporary thinking/loading messages only
+    removeTempThinkingMessages();
     
     // Add observer reasoning and guess to UI only if viewing current round
     if (viewingRoundIndex === -1) {
-      addMessage('thinking', 'Observer (Reasoning)', data.reasoning);
+      addMessage('reasoning', 'Observer (Reasoning)', data.reasoning);
       addGuessMessage('observer', 'Observer', data.guess, data.correct);
     }
     
@@ -419,12 +419,12 @@ async function runReceiverGuessPhase(senderMessage) {
     
     const data = await response.json();
     
-    // Remove thinking message
-    removeThinkingMessages();
+    // Remove temporary thinking/loading messages only
+    removeTempThinkingMessages();
     
     // Add receiver reasoning and guess to UI only if viewing current round
     if (viewingRoundIndex === -1) {
-      addMessage('thinking', 'Receiver (Reasoning)', data.reasoning);
+      addMessage('reasoning', 'Receiver (Reasoning)', data.reasoning);
       addGuessMessage('receiver', 'Receiver', data.guess, data.correct);
     }
     
@@ -539,12 +539,12 @@ async function runReceiverResponsePhase(senderMessage, receiverGuessData) {
     
     const data = await response.json();
     
-    // Remove thinking message
-    removeThinkingMessages();
+    // Remove temporary thinking/loading messages only
+    removeTempThinkingMessages();
     
     // Add receiver reasoning and message to UI only if viewing current round
     if (viewingRoundIndex === -1) {
-      addMessage('thinking', 'Receiver (Reasoning)', data.reasoning);
+      addMessage('reasoning', 'Receiver (Reasoning)', data.reasoning);
       addMessage('receiver', 'Receiver', data.message);
     }
     
@@ -600,8 +600,11 @@ function addMessage(type, role, content) {
   const messageDiv = document.createElement('div');
   
   if (type === 'thinking') {
-    // Thinking messages get the thinking class
+    // Temporary loading messages
     messageDiv.className = `message thinking`;
+  } else if (type === 'reasoning') {
+    // Reasoning messages get their own distinct styling
+    messageDiv.className = `message reasoning`;
   } else {
     // Use the role for styling (sender, receiver, or observer)
     const roleClass = role.toLowerCase().includes('observer') ? 'observer' : 
@@ -662,10 +665,21 @@ function addGuessMessage(type, role, guess, correct) {
   }, 50);
 }
 
-// Remove thinking messages from the UI
+// Remove temporary thinking/loading messages from the UI (but keep reasoning messages)
+function removeTempThinkingMessages() {
+  // Only remove thinking messages that don't have "Reasoning" in their text
+  // These are the temporary loading messages, not the actual reasoning content
+  const tempThinkingMessages = Array.from(elements.messageArea.querySelectorAll('.message.thinking')).filter(msg => {
+    const roleLabel = msg.querySelector('.role-label');
+    return roleLabel && !roleLabel.textContent.includes('Reasoning');
+  });
+  
+  tempThinkingMessages.forEach(msg => msg.remove());
+}
+
+// Legacy function maintained for backward compatibility, but modified to use our new approach
 function removeThinkingMessages() {
-  const thinkingMessages = elements.messageArea.querySelectorAll('.message.thinking');
-  thinkingMessages.forEach(msg => msg.remove());
+  removeTempThinkingMessages();
 }
 
 // Track which round is being viewed
@@ -765,28 +779,28 @@ function displayCurrentRoundMessages() {
   gameState.currentRoundData.messages.forEach(msg => {
     if (msg.role === 'sender') {
       // Show sender reasoning
-      addMessage('thinking', 'Sender (Reasoning)', msg.reasoning);
+      addMessage('reasoning', 'Sender (Reasoning)', msg.reasoning);
       
       // Show sender message
       addMessage('sender', 'Sender', msg.content);
     } 
     else if (msg.role === 'observer') {
       // Show observer reasoning
-      addMessage('thinking', 'Observer (Reasoning)', msg.reasoning);
+      addMessage('reasoning', 'Observer (Reasoning)', msg.reasoning);
       
       // Show observer guess with correct/incorrect indicator
       addGuessMessage('observer', 'Observer', msg.content, msg.correct);
     } 
     else if (msg.role === 'receiver-guess') {
       // Show receiver reasoning
-      addMessage('thinking', 'Receiver (Reasoning)', msg.reasoning);
+      addMessage('reasoning', 'Receiver (Reasoning)', msg.reasoning);
       
       // Show receiver guess with correct/incorrect indicator
       addGuessMessage('receiver', 'Receiver', msg.content, msg.correct);
     } 
     else if (msg.role === 'receiver') {
       // Show receiver reasoning
-      addMessage('thinking', 'Receiver (Reasoning)', msg.reasoning);
+      addMessage('reasoning', 'Receiver (Reasoning)', msg.reasoning);
       
       // Show receiver message
       addMessage('receiver', 'Receiver', msg.content);
@@ -836,28 +850,28 @@ function displayRoundMessages(round) {
   round.messages.forEach(msg => {
     if (msg.role === 'sender') {
       // Show sender reasoning
-      addMessage('thinking', 'Sender (Reasoning)', msg.reasoning);
+      addMessage('reasoning', 'Sender (Reasoning)', msg.reasoning);
       
       // Show sender message
       addMessage('sender', 'Sender', msg.content);
     } 
     else if (msg.role === 'observer') {
       // Show observer reasoning
-      addMessage('thinking', 'Observer (Reasoning)', msg.reasoning);
+      addMessage('reasoning', 'Observer (Reasoning)', msg.reasoning);
       
       // Show observer guess with correct/incorrect indicator
       addGuessMessage('observer', 'Observer', msg.content, msg.correct);
     } 
     else if (msg.role === 'receiver-guess') {
       // Show receiver reasoning
-      addMessage('thinking', 'Receiver (Reasoning)', msg.reasoning);
+      addMessage('reasoning', 'Receiver (Reasoning)', msg.reasoning);
       
       // Show receiver guess with correct/incorrect indicator
       addGuessMessage('receiver', 'Receiver', msg.content, msg.correct);
     } 
     else if (msg.role === 'receiver') {
       // Show receiver reasoning
-      addMessage('thinking', 'Receiver (Reasoning)', msg.reasoning);
+      addMessage('reasoning', 'Receiver (Reasoning)', msg.reasoning);
       
       // Show receiver message
       addMessage('receiver', 'Receiver', msg.content);

@@ -425,6 +425,15 @@ label {
   opacity: 0.8;
 }
 
+.message.reasoning {
+  border: 1px dashed var(--text-color);
+  background-color: rgba(0, 0, 0, 0.03);
+  opacity: 0.9;
+  max-width: 90%;
+  font-style: italic;
+  margin-bottom: 5px;
+}
+
 .message.round-heading {
   align-self: center;
   background-color: var(--card-background);
