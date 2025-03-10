@@ -21,15 +21,18 @@ const openai = new OpenAI({
 async function callModel(model, prompt, options = {}) {
   try {
     if (model === config.MODELS.CLAUDE) {
+      // Format the prompt to request JSON
+      const formattedSystemPrompt = (options.system || '') + 
+        "\n\nYou must respond in JSON format with the specified fields.";
+      
       const response = await anthropic.messages.create({
         model: "claude-3-7-sonnet-20250219",
         max_tokens: 1000,
         temperature: 0.7,
-        system: options.system || '',
+        system: formattedSystemPrompt,
         messages: [
           { role: "user", content: prompt }
-        ],
-        response_format: { type: "json_object" }
+        ]
       });
       return JSON.parse(response.content[0].text);
     } else {
