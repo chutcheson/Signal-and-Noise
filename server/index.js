@@ -37,8 +37,8 @@ app.get('/api/secret', async (req, res) => {
 // Handle sender message generation
 app.post('/api/sender-message', async (req, res) => {
   try {
-    const { model, secret, receiverMessage, loop } = req.body;
-    const result = await apiService.generateSenderMessage(model, secret, receiverMessage, loop);
+    const { model, secret, conversationHistory, loop, receiverModel, observerModel } = req.body;
+    const result = await apiService.generateSenderMessage(model, secret, conversationHistory, loop, receiverModel, observerModel);
     res.json(result);
   } catch (error) {
     console.error('Error generating sender message:', error);
@@ -49,8 +49,8 @@ app.post('/api/sender-message', async (req, res) => {
 // Handle receiver guess
 app.post('/api/receiver-guess', async (req, res) => {
   try {
-    const { model, secret, senderMessage } = req.body;
-    const result = await apiService.generateReceiverGuess(model, secret, senderMessage);
+    const { model, secret, senderMessage, conversationHistory, loop, senderModel, observerModel } = req.body;
+    const result = await apiService.generateReceiverGuess(model, secret, senderMessage, conversationHistory, loop, senderModel, observerModel);
     res.json(result);
   } catch (error) {
     console.error('Error generating receiver guess:', error);
@@ -61,8 +61,8 @@ app.post('/api/receiver-guess', async (req, res) => {
 // Handle observer guess
 app.post('/api/observer-guess', async (req, res) => {
   try {
-    const { model, secret, senderMessage } = req.body;
-    const result = await apiService.generateObserverGuess(model, secret, senderMessage);
+    const { model, secret, senderMessage, conversationHistory, loop, senderModel, receiverModel } = req.body;
+    const result = await apiService.generateObserverGuess(model, secret, senderMessage, conversationHistory, loop, senderModel, receiverModel);
     res.json(result);
   } catch (error) {
     console.error('Error generating observer guess:', error);
@@ -73,8 +73,8 @@ app.post('/api/observer-guess', async (req, res) => {
 // Handle receiver message
 app.post('/api/receiver-message', async (req, res) => {
   try {
-    const { model, secret, senderMessage, receiverGuess } = req.body;
-    const result = await apiService.generateReceiverMessage(model, secret, senderMessage, receiverGuess);
+    const { model, secret, senderMessage, receiverGuess, conversationHistory, loop, senderModel, observerModel } = req.body;
+    const result = await apiService.generateReceiverMessage(model, secret, senderMessage, receiverGuess, conversationHistory, loop, senderModel, observerModel);
     res.json(result);
   } catch (error) {
     console.error('Error generating receiver message:', error);

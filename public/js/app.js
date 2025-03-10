@@ -266,8 +266,10 @@ async function runSenderPhase() {
       body: JSON.stringify({
         model: gameState.getCurrentSenderReceiverModel(),
         secret: gameState.secret,
-        receiverMessage,
-        loop: gameState.currentLoop
+        conversationHistory: gameState.currentRoundData.messages,
+        loop: gameState.currentLoop,
+        receiverModel: gameState.getCurrentSenderReceiverModel(),
+        observerModel: gameState.getCurrentObserverModel()
       })
     });
     
@@ -315,7 +317,11 @@ async function runObserverPhase(senderMessage) {
       body: JSON.stringify({
         model: gameState.getCurrentObserverModel(),
         secret: gameState.secret,
-        senderMessage
+        senderMessage,
+        conversationHistory: gameState.currentRoundData.messages,
+        loop: gameState.currentLoop,
+        senderModel: gameState.getCurrentSenderReceiverModel(),
+        receiverModel: gameState.getCurrentSenderReceiverModel()
       })
     });
     
@@ -403,7 +409,11 @@ async function runReceiverGuessPhase(senderMessage) {
       body: JSON.stringify({
         model: gameState.getCurrentSenderReceiverModel(),
         secret: gameState.secret,
-        senderMessage
+        senderMessage,
+        conversationHistory: gameState.currentRoundData.messages,
+        loop: gameState.currentLoop,
+        senderModel: gameState.getCurrentSenderReceiverModel(),
+        observerModel: gameState.getCurrentObserverModel()
       })
     });
     
@@ -519,7 +529,11 @@ async function runReceiverResponsePhase(senderMessage, receiverGuessData) {
         model: gameState.getCurrentSenderReceiverModel(),
         secret: gameState.secret,
         senderMessage,
-        receiverGuess: receiverGuessData
+        receiverGuess: receiverGuessData,
+        conversationHistory: gameState.currentRoundData.messages,
+        loop: gameState.currentLoop,
+        senderModel: gameState.getCurrentSenderReceiverModel(),
+        observerModel: gameState.getCurrentObserverModel()
       })
     });
     
