@@ -251,13 +251,23 @@ label {
 .game-board {
   display: grid;
   grid-template-columns: 3fr 1fr;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr); /* Critical: second row will not grow beyond container */
   gap: 20px;
-  flex: 1;
+  
+  /* Fixed height with strict constraints */
+  height: calc(85vh - 130px);
+  max-height: calc(85vh - 130px);
+  min-height: 0;
+  
+  /* Critical: prevent the board from growing beyond allocated space */
+  flex: 1 0 auto;
   margin: 20px 0;
-  max-height: calc(85vh - 130px); /* Slightly adjust for better spacing */
-  min-height: 0; /* Important for grid items to respect container height */
-  overflow: hidden; /* Prevent overall expansion */
+  
+  /* Prevent any overflow expansion */
+  overflow: hidden;
+  
+  /* Force hardware acceleration to prevent layout shifts */
+  transform: translateZ(0);
 }
 
 .game-info {
@@ -334,10 +344,17 @@ label {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  
+  /* Strict size constraints to prevent expansion */
   height: 100%;
-  min-height: 0; /* Important for proper scrolling */
-  max-height: 100%; /* Prevent expanding beyond container */
-  flex: 1 1 auto; /* Allow growing to fill space but not beyond */
+  max-height: 100%;
+  min-height: 0;
+  
+  /* Critical: Prevent growth beyond container size */
+  flex: 1 0 auto; /* grow but don't shrink, with no basis */
+  
+  /* Force hardware acceleration to prevent layout shifts */
+  transform: translateZ(0);
 }
 
 /* Paper texture for message area */
@@ -449,11 +466,20 @@ label {
   flex-direction: column;
   box-shadow: 6px 6px 0 var(--text-color);
   position: relative;
+  
+  /* Strict size constraints to prevent expansion */
   height: 100%;
-  min-height: 0; /* Important for proper scrolling */
-  max-height: 100%; /* Prevent expanding beyond container */
+  max-height: 100%;
+  min-height: 0;
+  
+  /* Critical: Prevent growth beyond container size */
+  flex: 1 0 auto; /* grow but don't shrink, with no basis */
+  
+  /* Force hardware acceleration to prevent layout shifts */
+  transform: translateZ(0);
+  
+  /* Ensure scrolling works properly */
   overflow-y: auto;
-  flex: 1 1 auto; /* Allow growing to fill space but not beyond */
 }
 
 /* Brutalist marker */
