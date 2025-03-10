@@ -210,9 +210,13 @@ async function startNewRound() {
     outcome: null
   };
   
-  // Update UI
+  // Update round number display
   elements.roundNumber.textContent = gameState.currentRound;
-  elements.messageArea.innerHTML = '';
+  
+  // Only clear and update the message area if user is not viewing a historical round
+  if (viewingRoundIndex === -1) {
+    elements.messageArea.innerHTML = '';
+  }
   
   // Get a new secret word
   try {
@@ -221,8 +225,10 @@ async function startNewRound() {
     gameState.secret = data.secret;
     gameState.currentRoundData.secret = data.secret;
     
-    // Show secret word on UI (obscured or revealed based on game phase)
-    elements.gameWord.textContent = gameState.secret;
+    // Show secret word on UI only if viewing current round
+    if (viewingRoundIndex === -1) {
+      elements.gameWord.textContent = gameState.secret;
+    }
     
     // Start the round flow
     await runSenderPhase();
@@ -236,8 +242,10 @@ async function startNewRound() {
 async function runSenderPhase() {
   gameState.currentPhase = 'sender';
   
-  // Show loading message
-  addMessage('thinking', 'Sender', 'Thinking about how to communicate the secret...');
+  // Show loading message only if viewing current round
+  if (viewingRoundIndex === -1) {
+    addMessage('thinking', 'Sender', 'Thinking about how to communicate the secret...');
+  }
   
   try {
     // Get previous receiver message if this isn't the first loop
@@ -262,9 +270,11 @@ async function runSenderPhase() {
     // Remove thinking message
     removeThinkingMessages();
     
-    // Add sender message and reasoning to UI
-    addMessage('thinking', 'Sender (Reasoning)', data.reasoning);
-    addMessage('sender', 'Sender', data.message);
+    // Add sender message and reasoning to UI only if viewing current round
+    if (viewingRoundIndex === -1) {
+      addMessage('thinking', 'Sender (Reasoning)', data.reasoning);
+      addMessage('sender', 'Sender', data.message);
+    }
     
     // Add to messages history
     gameState.currentRoundData.messages.push({
@@ -286,8 +296,10 @@ async function runSenderPhase() {
 async function runObserverPhase(senderMessage) {
   gameState.currentPhase = 'observer';
   
-  // Show loading message
-  addMessage('thinking', 'Observer', 'Analyzing the message and making a guess...');
+  // Show loading message only if viewing current round
+  if (viewingRoundIndex === -1) {
+    addMessage('thinking', 'Observer', 'Analyzing the message and making a guess...');
+  }
   
   try {
     // Call API to get observer guess
@@ -306,9 +318,11 @@ async function runObserverPhase(senderMessage) {
     // Remove thinking message
     removeThinkingMessages();
     
-    // Add observer reasoning and guess to UI
-    addMessage('thinking', 'Observer (Reasoning)', data.reasoning);
-    addGuessMessage('observer', 'Observer', data.guess, data.correct);
+    // Add observer reasoning and guess to UI only if viewing current round
+    if (viewingRoundIndex === -1) {
+      addMessage('thinking', 'Observer (Reasoning)', data.reasoning);
+      addGuessMessage('observer', 'Observer', data.guess, data.correct);
+    }
     
     // Add to messages history
     gameState.currentRoundData.messages.push({
@@ -370,8 +384,10 @@ async function runObserverPhase(senderMessage) {
 async function runReceiverGuessPhase(senderMessage) {
   gameState.currentPhase = 'receiver-guess';
   
-  // Show loading message
-  addMessage('thinking', 'Receiver', 'Interpreting the message and making a guess...');
+  // Show loading message only if viewing current round
+  if (viewingRoundIndex === -1) {
+    addMessage('thinking', 'Receiver', 'Interpreting the message and making a guess...');
+  }
   
   try {
     // Call API to get receiver guess
@@ -390,9 +406,11 @@ async function runReceiverGuessPhase(senderMessage) {
     // Remove thinking message
     removeThinkingMessages();
     
-    // Add receiver reasoning and guess to UI
-    addMessage('thinking', 'Receiver (Reasoning)', data.reasoning);
-    addGuessMessage('receiver', 'Receiver', data.guess, data.correct);
+    // Add receiver reasoning and guess to UI only if viewing current round
+    if (viewingRoundIndex === -1) {
+      addMessage('thinking', 'Receiver (Reasoning)', data.reasoning);
+      addGuessMessage('receiver', 'Receiver', data.guess, data.correct);
+    }
     
     // Add to messages history
     gameState.currentRoundData.messages.push({
@@ -481,8 +499,10 @@ async function runReceiverGuessPhase(senderMessage) {
 async function runReceiverResponsePhase(senderMessage, receiverGuessData) {
   gameState.currentPhase = 'receiver-response';
   
-  // Show loading message
-  addMessage('thinking', 'Receiver', 'Crafting a response to the Sender...');
+  // Show loading message only if viewing current round
+  if (viewingRoundIndex === -1) {
+    addMessage('thinking', 'Receiver', 'Crafting a response to the Sender...');
+  }
   
   try {
     // Call API to get receiver message
@@ -502,9 +522,11 @@ async function runReceiverResponsePhase(senderMessage, receiverGuessData) {
     // Remove thinking message
     removeThinkingMessages();
     
-    // Add receiver reasoning and message to UI
-    addMessage('thinking', 'Receiver (Reasoning)', data.reasoning);
-    addMessage('receiver', 'Receiver', data.message);
+    // Add receiver reasoning and message to UI only if viewing current round
+    if (viewingRoundIndex === -1) {
+      addMessage('thinking', 'Receiver (Reasoning)', data.reasoning);
+      addMessage('receiver', 'Receiver', data.message);
+    }
     
     // Add to messages history
     gameState.currentRoundData.messages.push({
