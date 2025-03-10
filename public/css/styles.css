@@ -738,73 +738,24 @@ label {
   to { transform: rotate(360deg); }
 }
 
-/* Result summary */
-.result-summary {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  max-width: 400px;
-  width: 90%;
+/* Play Again button in header */
+.play-again-btn {
+  margin-left: 20px;
+  font-size: 14px !important;
+  padding: 8px 16px !important;
 }
 
-/* Footer style for game over summary */
-.result-summary.result-footer {
-  position: static;
-  grid-column: 1 / -1;
-  max-width: 100%;
-  width: 100%;
-  margin-top: 20px;
-  z-index: 5;
-}
-
-.result-container {
-  background-color: var(--card-background);
-  border: 3px solid var(--text-color);
-  box-shadow: 8px 8px 0 var(--text-color);
-  padding: 25px;
+/* Game over message */
+.message.game-over {
+  background-color: var(--accent-color);
+  color: white;
   text-align: center;
-  position: relative;
-  
-  /* Brutalist design elements */
-  clip-path: polygon(
-    0 0, 
-    100% 0, 
-    100% 95%, 
-    95% 100%, 
-    0 100%
-  );
-}
-
-.result-footer .result-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  text-align: left;
   padding: 15px 20px;
-}
-
-.result-footer h2 {
-  margin-bottom: 0 !important;
-  flex: 1 0 auto;
-}
-
-.result-footer .final-scores {
-  flex: 2 0 auto;
-  margin: 0 20px !important;
-}
-
-.result-footer #winning-team {
-  flex: 1 0 auto;
-  margin-bottom: 0 !important;
-  text-align: right;
-}
-
-.result-footer .result-actions {
-  flex-basis: 100%;
-  justify-content: flex-end;
-  margin-top: 10px;
+  margin: 20px 0;
+  font-size: 16px;
+  font-weight: 400;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .result-actions {

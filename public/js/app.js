@@ -181,21 +181,7 @@ function attachEventListeners() {
   // Setup form submission
   elements.setupForm.addEventListener('submit', handleGameStart);
   
-  // New game button
-  elements.newGameBtn.addEventListener('click', () => {
-    // Reset game state
-    elements.resultSummary.style.display = 'none';
-    elements.gameScreen.style.display = 'none';
-    elements.setupScreen.style.display = 'block';
-    
-    // Remove result-footer class to clean up
-    elements.resultSummary.classList.remove('result-footer');
-    
-    // Remove game-active class to revert to normal layout
-    document.querySelector('.app-container').classList.remove('game-active');
-  });
-  
-  // Remove the continue viewing button click handler as it's no longer needed
+  // We don't need the New Game button event listener anymore since we're using the Play Again button
 }
 
 // Handle game start
@@ -609,31 +595,57 @@ async function runReceiverResponsePhase(senderMessage, receiverGuessData) {
   }
 }
 
-// End the game and show results
+// End the game and show play again button
 function endGame() {
-  // Update scores
-  elements.secretWord.textContent = gameState.secret;
-  elements.finalSenderScore.textContent = gameState.scores.modelOne;
-  elements.finalObserverScore.textContent = gameState.scores.modelTwo;
-  
-  // Set model names in results
-  const modelOneName = `${getShortenedModelName(gameState.modelOne)} (#1)`;
-  const modelTwoName = `${getShortenedModelName(gameState.modelTwo)} (#2)`;
-  elements.finalModelOneName.textContent = modelOneName;
-  elements.finalModelTwoName.textContent = modelTwoName;
-  
-  // Show winner
-  if (gameState.scores.modelOne > gameState.scores.modelTwo) {
-    elements.winningTeam.textContent = `${modelOneName} Wins!`;
-  } else if (gameState.scores.modelTwo > gameState.scores.modelOne) {
-    elements.winningTeam.textContent = `${modelTwoName} Wins!`;
-  } else {
-    elements.winningTeam.textContent = "It's a Tie!";
+  // Create a play again button if it doesn't exist yet
+  if (!document.getElementById('play-again-btn')) {
+    const playAgainBtn = document.createElement('button');
+    playAgainBtn.id = 'play-again-btn';
+    playAgainBtn.className = 'primary-btn play-again-btn';
+    playAgainBtn.textContent = 'Play Again';
+    
+    // Add event listener to start a new game
+    playAgainBtn.addEventListener('click', () => {
+      // Hide game screen and show setup screen
+      elements.gameScreen.style.display = 'none';
+      elements.setupScreen.style.display = 'block';
+      
+      // Remove the button itself
+      playAgainBtn.remove();
+      
+      // Remove game-active class to revert to normal layout
+      document.querySelector('.app-container').classList.remove('game-active');
+    });
+    
+    // Add to header - find header element
+    const header = document.querySelector('header');
+    header.appendChild(playAgainBtn);
   }
   
-  // Show result summary as a footer
-  elements.resultSummary.style.display = 'block';
-  elements.resultSummary.className = 'result-summary result-footer';
+  // Display a winner message in the message area
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'message round-heading game-over';
+  
+  // Determine the winner
+  const modelOneName = `${getShortenedModelName(gameState.modelOne)} (#1)`;
+  const modelTwoName = `${getShortenedModelName(gameState.modelTwo)} (#2)`;
+  
+  let winnerMessage;
+  if (gameState.scores.modelOne > gameState.scores.modelTwo) {
+    winnerMessage = `${modelOneName} Wins! Final score: ${gameState.scores.modelOne}-${gameState.scores.modelTwo}`;
+  } else if (gameState.scores.modelTwo > gameState.scores.modelOne) {
+    winnerMessage = `${modelTwoName} Wins! Final score: ${gameState.scores.modelTwo}-${gameState.scores.modelOne}`;
+  } else {
+    winnerMessage = `It's a Tie! Final score: ${gameState.scores.modelOne}-${gameState.scores.modelTwo}`;
+  }
+  
+  messageDiv.innerHTML = `<strong>Game Over:</strong> ${winnerMessage}`;
+  elements.messageArea.appendChild(messageDiv);
+  
+  // Scroll to bottom to show the game over message
+  setTimeout(() => {
+    elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
+  }, 100);
 }
 
 // Add a message to the message area
