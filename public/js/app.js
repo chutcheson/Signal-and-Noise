@@ -605,6 +605,8 @@ function addMessage(type, role, content) {
   } else if (type === 'reasoning') {
     // Reasoning messages get their own distinct styling
     messageDiv.className = `message reasoning`;
+    // Add role as data attribute for CSS targeting
+    messageDiv.dataset.role = role;
   } else {
     // Use the role for styling (sender, receiver, or observer)
     const roleClass = role.toLowerCase().includes('observer') ? 'observer' : 

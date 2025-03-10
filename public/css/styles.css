@@ -429,9 +429,29 @@ label {
   border: 1px dashed var(--text-color);
   background-color: rgba(0, 0, 0, 0.03);
   opacity: 0.9;
-  max-width: 90%;
+  max-width: 80%;
   font-style: italic;
   margin-bottom: 5px;
+  padding: 10px;
+}
+
+/* Align reasoning messages based on their role */
+.message.reasoning[data-role="Sender (Reasoning)"] {
+  align-self: flex-start; /* Left-aligned for Sender */
+  border-left: 2px dashed var(--accent-color);
+  background-color: rgba(174, 108, 88, 0.05);
+}
+
+.message.reasoning[data-role="Observer (Reasoning)"] {
+  align-self: flex-end; /* Right-aligned for Observer */
+  border-right: 2px dashed var(--secondary-color);
+  background-color: rgba(181, 129, 109, 0.05);
+}
+
+.message.reasoning[data-role="Receiver (Reasoning)"] {
+  align-self: flex-end; /* Right-aligned for Receiver */
+  border-right: 2px dashed var(--primary-color);
+  background-color: rgba(126, 128, 96, 0.05);
 }
 
 .message.round-heading {
