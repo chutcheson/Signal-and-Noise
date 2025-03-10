@@ -135,7 +135,7 @@ Craft your refined message:`
 
 // Helper function to choose the API client based on model name
 const getApiClient = (modelName) => {
-  if (modelName.includes('claude')) {
+  if (modelName.includes('claude-3-7')) {
     return 'anthropic';
   } else {
     return 'openai';
@@ -187,7 +187,7 @@ const callOpenAI = async (messages, modelName = 'gpt-4o') => {
 };
 
 // Function to call the Anthropic API
-const callAnthropic = async (messages, modelName = 'claude-3-sonnet-20240229') => {
+const callAnthropic = async (messages, modelName = 'claude-3-7-sonnet-20250219') => {
   try {
     // Format messages for Anthropic
     const systemMessage = messages.find(msg => msg.role === 'system')?.content || '';
