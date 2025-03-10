@@ -48,8 +48,8 @@ const elements = {
   observerSelect: document.getElementById('observer-model'),
   roundNumber: document.getElementById('round-number'),
   gameWord: document.getElementById('game-word'),
-  currentPhase: document.getElementById('current-phase'),
-  modelsDisplay: document.getElementById('models-display'),
+  senderReceiverDisplay: document.getElementById('sender-receiver-display'),
+  observerDisplay: document.getElementById('observer-display'),
   messageArea: document.getElementById('message-area'),
   roundHistory: document.getElementById('round-history'),
   senderReceiverScore: document.getElementById('sender-receiver-score'),
@@ -124,7 +124,8 @@ async function handleGameStart(event) {
   // Update UI
   elements.setupScreen.style.display = 'none';
   elements.gameScreen.style.display = 'block';
-  elements.modelsDisplay.textContent = `${getShortenedModelName(gameState.senderReceiverModel)} vs ${getShortenedModelName(gameState.observerModel)}`;
+  elements.senderReceiverDisplay.textContent = getShortenedModelName(gameState.senderReceiverModel);
+  elements.observerDisplay.textContent = getShortenedModelName(gameState.observerModel);
   
   // Start the first round
   await startNewRound();
@@ -173,7 +174,6 @@ async function startNewRound() {
 // Run the Sender phase
 async function runSenderPhase() {
   gameState.currentPhase = 'sender';
-  elements.currentPhase.textContent = "Sender's Turn";
   
   // Show loading message
   addMessage('thinking', 'Sender', 'Thinking about how to communicate the secret...');
@@ -224,7 +224,6 @@ async function runSenderPhase() {
 // Run the Observer phase
 async function runObserverPhase(senderMessage) {
   gameState.currentPhase = 'observer';
-  elements.currentPhase.textContent = "Observer's Turn";
   
   // Show loading message
   addMessage('thinking', 'Observer', 'Analyzing the message and making a guess...');
@@ -299,7 +298,6 @@ async function runObserverPhase(senderMessage) {
 // Run the Receiver guess phase
 async function runReceiverGuessPhase(senderMessage) {
   gameState.currentPhase = 'receiver-guess';
-  elements.currentPhase.textContent = "Receiver's Turn";
   
   // Show loading message
   addMessage('thinking', 'Receiver', 'Interpreting the message and making a guess...');
@@ -399,7 +397,6 @@ async function runReceiverGuessPhase(senderMessage) {
 // Run the Receiver response phase
 async function runReceiverResponsePhase(senderMessage, receiverGuessData) {
   gameState.currentPhase = 'receiver-response';
-  elements.currentPhase.textContent = "Receiver's Response";
   
   // Show loading message
   addMessage('thinking', 'Receiver', 'Crafting a response to the Sender...');
