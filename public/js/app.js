@@ -846,14 +846,13 @@ function updateRoundHistory() {
   // Store the most recent round for later display
   const mostRecentRound = gameState.rounds[gameState.rounds.length - 1];
   
-  // Add each round
+  // Add each completed round
   gameState.rounds.forEach((round, index) => {
     const roundItem = document.createElement('div');
     roundItem.className = 'round-item';
     
-    // Mark the current round as active only if we're not viewing a specific round
-    if ((viewingRoundIndex === -1 && index === currentRoundIndex) || 
-        index === viewingRoundIndex) {
+    // Mark the round as active if it's being viewed
+    if (viewingRoundIndex === index) {
       roundItem.classList.add('active');
     }
     
@@ -900,15 +899,61 @@ function updateRoundHistory() {
     elements.roundHistory.appendChild(roundItem);
   });
   
-  // When game is in progress, only show most recent round if we're not already viewing a specific round
-  if (mostRecentRound && viewingRoundIndex === -1) {
-    displayRoundMessages(mostRecentRound);
-  } else if (viewingRoundIndex >= 0 && viewingRoundIndex < gameState.rounds.length) {
-    // If we are viewing a specific round and it still exists, keep it highlighted
-    document.querySelectorAll('.round-item').forEach((item, index) => {
-      item.classList.toggle('active', index === viewingRoundIndex);
+  // Add current round button if the game is in progress
+  if (gameState.currentRoundData.messages.length > 0) {
+    const currentRoundItem = document.createElement('div');
+    currentRoundItem.className = 'round-item current-round';
+    
+    // Mark the current round as active if we're viewing it
+    if (viewingRoundIndex === -1) {
+      currentRoundItem.classList.add('active');
+    }
+    
+    const roundNumber = document.createElement('div');
+    roundNumber.className = 'round-number';
+    roundNumber.textContent = `Current Round (${gameState.currentRound})`;
+    
+    const roundWord = document.createElement('div');
+    roundWord.className = 'round-word';
+    roundWord.textContent = gameState.secret;
+    
+    const roundStatus = document.createElement('div');
+    roundStatus.className = 'round-result in-progress';
+    roundStatus.textContent = 'In progress...';
+    
+    currentRoundItem.appendChild(roundNumber);
+    currentRoundItem.appendChild(roundWord);
+    currentRoundItem.appendChild(roundStatus);
+    
+    // Add click event to show current round messages
+    currentRoundItem.addEventListener('click', () => {
+      // Remove active class from all items
+      document.querySelectorAll('.round-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Add active class to current round item
+      currentRoundItem.classList.add('active');
+      
+      // Update the viewing round index to -1 (current round)
+      viewingRoundIndex = -1;
+      
+      // Display current round messages
+      displayCurrentRoundMessages();
     });
+    
+    elements.roundHistory.appendChild(currentRoundItem);
   }
+  
+  // Make sure the correct round is displayed
+  if (viewingRoundIndex === -1) {
+    // Display current round if that's what we're viewing
+    displayCurrentRoundMessages();
+  } else if (viewingRoundIndex >= 0 && viewingRoundIndex < gameState.rounds.length) {
+    // Display the specific round we're viewing
+    displayRoundMessages(gameState.rounds[viewingRoundIndex]);
+  }
+}
 }
 
 // Display messages from the current active round
@@ -965,30 +1010,6 @@ function displayRoundMessages(round) {
   
   // Update the game word display to show this round's secret
   elements.gameWord.textContent = round.secret;
-  
-  // Add a "Return to Current Round" button if we're viewing history during an active game
-  if (gameState.currentRoundData.messages.length > 0 && round !== gameState.currentRoundData) {
-    const returnButton = document.createElement('button');
-    returnButton.className = 'secondary-btn return-to-current';
-    returnButton.textContent = 'Return to Current Round';
-    returnButton.style.alignSelf = 'center';
-    returnButton.style.margin = '10px 0';
-    
-    returnButton.addEventListener('click', () => {
-      // Reset the viewing index to indicate we're viewing the current round
-      viewingRoundIndex = -1;
-      
-      // Display current round's messages
-      displayCurrentRoundMessages();
-      
-      // Update active state in round history
-      document.querySelectorAll('.round-item').forEach((item, index) => {
-        item.classList.toggle('active', index === gameState.currentRound - 1);
-      });
-    });
-    
-    elements.messageArea.appendChild(returnButton);
-  }
   
   // Display a heading for the round
   const roundHeading = document.createElement('div');
