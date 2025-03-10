@@ -194,7 +194,7 @@ function updateModelDisplays() {
 
 // Get shortened model name for display
 function getShortenedModelName(modelId) {
-  if (modelId.includes('claude')) return 'Claude';
+  if (modelId.includes('claude-3-7-sonnet')) return 'Claude-3.7-Sonnet';
   if (modelId.includes('gpt-4o-mini')) return 'GPT-4o Mini';
   if (modelId.includes('gpt-4o')) return 'GPT-4o';
   return modelId;
