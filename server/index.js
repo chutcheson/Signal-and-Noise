@@ -1,169 +1,83 @@
 const express = require('express');
 const path = require('path');
-const cors = require('cors');
-const fs = require('fs');
-require('dotenv').config();
+const dotenv = require('dotenv');
 
-// Import API service modules
+// Load environment variables from .env file if present
+dotenv.config();
+
+// Load config from config.js file if present
+let config = {};
+try {
+  config = require('../config');
+} catch (err) {
+  console.log('No config.js file found, using environment variables');
+}
+
+// API services
 const apiService = require('./apiService');
 const wordService = require('./wordService');
 
-// Initialize express app
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || config.PORT || 3000;
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Game state storage (in memory for simplicity)
-const gameState = {
-  currentGame: null,
-  activeGames: {}
-};
-
-// Routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
 // API Routes
+app.get('/api/models', (req, res) => {
+  res.json({
+    models: [
+      { id: 'gpt-4o', name: 'GPT-4o' },
+      { id: 'gpt-4o-mini', name: 'GPT-4o-mini' },
+      { id: 'claude-3-7-sonnet-20250219', name: 'Claude-3.7-Sonnet' }
+    ]
+  });
+});
 
-// Start a new round
-app.get('/api/new-round', async (req, res) => {
+app.get('/api/secret', async (req, res) => {
   try {
-    // Get a random word and category from the word service
-    const { word, category } = await wordService.getRandomWordAndCategory();
-    
-    res.json({
-      success: true,
-      secretWord: word,
-      category: category
-    });
+    const secret = await wordService.getRandomSecret();
+    res.json({ secret });
   } catch (error) {
-    console.error('Error starting new round:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to start new round'
-    });
+    console.error('Error getting secret word:', error);
+    res.status(500).json({ error: 'Failed to get secret word' });
   }
 });
 
-// Get a message from the Sender
-app.post('/api/sender-message', async (req, res) => {
+app.post('/api/message', async (req, res) => {
   try {
-    const { secretWord, category, messages, loop } = req.body;
+    const { model, role, message, secret, history } = req.body;
     
-    // Call the AI service to get a sender message
-    const message = await apiService.getSenderMessage(secretWord, category, messages, loop);
+    if (!model || !role || !secret) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
     
-    res.json({
-      success: true,
-      message: message
-    });
+    const response = await apiService.generateMessage(model, role, message, secret, history);
+    res.json(response);
   } catch (error) {
-    console.error('Error getting sender message:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get sender message'
-    });
+    console.error('Error generating message:', error);
+    res.status(500).json({ error: 'Failed to generate message' });
   }
 });
 
-// Get a guess from the Observer
-app.post('/api/observer-guess', async (req, res) => {
+app.post('/api/guess', async (req, res) => {
   try {
-    const { category, messages, secretWord } = req.body;
+    const { model, role, message, secret, history } = req.body;
     
-    console.log(`Observer attempting to guess secret word: ${secretWord}`);
+    if (!model || !role || !secret) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
     
-    // Call the AI service to get an observer guess
-    const { guess, isCorrect, message } = await apiService.getObserverGuess(category, messages, secretWord);
-    
-    res.json({
-      success: true,
-      guess: guess,
-      isCorrect: isCorrect,
-      message: message
-    });
+    const response = await apiService.generateGuess(model, role, message, secret, history);
+    res.json(response);
   } catch (error) {
-    console.error('Error getting observer guess:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get observer guess'
-    });
+    console.error('Error generating guess:', error);
+    res.status(500).json({ error: 'Failed to generate guess' });
   }
 });
 
-// Get a guess from the Receiver
-app.post('/api/receiver-guess', async (req, res) => {
-  try {
-    const { category, messages, secretWord } = req.body;
-    
-    console.log(`Receiver attempting to guess secret word: ${secretWord}`);
-    
-    // Call the AI service to get a receiver guess
-    const { guess, isCorrect, message } = await apiService.getReceiverGuess(category, messages, secretWord);
-    
-    res.json({
-      success: true,
-      guess: guess,
-      isCorrect: isCorrect,
-      message: message
-    });
-  } catch (error) {
-    console.error('Error getting receiver guess:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get receiver guess'
-    });
-  }
-});
-
-// Get a response from the Receiver
-app.post('/api/receiver-response', async (req, res) => {
-  try {
-    const { category, messages } = req.body;
-    
-    // Call the AI service to get a receiver response
-    const message = await apiService.getReceiverResponse(category, messages);
-    
-    res.json({
-      success: true,
-      message: message
-    });
-  } catch (error) {
-    console.error('Error getting receiver response:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get receiver response'
-    });
-  }
-});
-
-// Get a refined message from the Sender
-app.post('/api/sender-refined-message', async (req, res) => {
-  try {
-    const { secretWord, category, messages, loop } = req.body;
-    
-    // Call the AI service to get a refined sender message
-    const message = await apiService.getSenderRefinedMessage(secretWord, category, messages, loop);
-    
-    res.json({
-      success: true,
-      message: message
-    });
-  } catch (error) {
-    console.error('Error getting sender refined message:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get sender refined message'
-    });
-  }
-});
-
-// Start server
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

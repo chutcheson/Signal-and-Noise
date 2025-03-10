@@ -1,74 +1,97 @@
 # Signal & Noise: AI Secret Exchange
 
-A game of hidden messages and intelligent guesswork, where three large language model instances engage in strategic communication to test their abilities in subtle messaging and inference.
+A game of hidden messages and intelligent guesswork between language models.
 
-## Game Overview
+## Overview
 
-In this intriguing AI-powered communication game, three language models take on different roles:
+Signal & Noise is an AI-powered communication game where three large language model instances engage in a strategic interaction, testing their abilities in subtle communication and inference. The core challenge is uncovering a secret word or phrase, exploring how effectively an AI can use mutual self-knowledge to outperform another distinct model.
 
-- **Sender**: Crafts messages to help the Receiver identify a secret word while hindering the Observer.
+## Game Rules
+
+### Participants:
+
+- **Sender**: Crafts messages to help the Receiver identify the secret while hindering the Observer model.
 - **Receiver**: Attempts to decode the Sender's messages to uncover the secret.
-- **Observer**: Observes all messages and attempts to infer the secret independently.
+- **Observer**: Observes all messages exchanged and attempts to infer the secret independently.
 
-The game progresses through multiple phases per round:
+### Gameplay Overview:
 
-1. **Phase 0**: All models are informed of the general category of the secret word.
-2. **Phase 1**: Sender receives the secret word and sends a subtle message to the Receiver.
-3. **Phase 2**: Observer reads the Sender's message and attempts to guess the secret.
-4. **Phase 3**: Receiver reads the Sender's message and attempts to guess the secret.
-5. **Phase 4**: Receiver sends a response message back to the Sender.
-6. **Phase 5**: Sender refines and sends a new message based on the Receiver's response.
+The game progresses through multiple phases and loops per round:
 
-This exchange can repeat for up to four loops per round with the same secret word.
+**Phase Order:**
 
-## Installation
+1. Sender receives the secret and sends a subtle message to the Receiver.
+2. Observer reads the Sender's message and attempts to guess the secret.
+   - Success: Observer earns a point, ending the round.
+   - Failure: Proceed to next phase.
+3. Receiver reads the Sender's message and attempts to guess the secret.
+   - Success: Sender and Receiver earn a point, ending the round.
+   - Failure: Proceed to next phase.
+4. Receiver sends a response message back to the Sender.
+   - Both Observer and Sender read this response.
+5. Sender refines and sends a new message based on the Receiver's response, repeating the loop.
 
-1. Clone this repository:
+This exchange repeats for a maximum of four loops per round with the same secret. If neither the Receiver nor Observer successfully guesses by the end of four loops, the round ends in a tie.
+
+## Setup and Installation
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- API keys for OpenAI and Anthropic
+
+### Installation
+
+1. Clone this repository
    ```
-   git clone https://github.com/yourusername/signal-and-noise.git
-   cd signal-and-noise
+   git clone https://github.com/yourusername/signal_and_noise.git
+   cd signal_and_noise
    ```
 
-2. Install dependencies:
+2. Install dependencies
    ```
    npm install
    ```
 
-3. Set up your API keys using one of these methods:
-
-   **Method 1: Configuration File (Recommended)**
+3. Set up configuration
    - Copy `config.example.js` to `config.js`
-   - Add your OpenAI and Anthropic API keys to the `config.js` file
+   - Add your API keys to the config file
+   ```
+   // config.js
+   module.exports = {
+     OPENAI_API_KEY: 'your-openai-api-key',
+     ANTHROPIC_API_KEY: 'your-anthropic-api-key',
+     PORT: 3000
+   };
+   ```
    
-   **Method 2: Environment Variables**
+   Alternatively, you can use environment variables:
    - Copy `.env.example` to `.env`
-   - Add your OpenAI and Anthropic API keys to the `.env` file
+   - Add your API keys to the `.env` file
 
-## Running the Application
+### Running the Application
 
-1. Start the development server:
+1. Start the server
+   ```
+   npm start
+   ```
+   
+   For development with auto-restart:
    ```
    npm run dev
    ```
 
-2. Open your browser and navigate to:
-   ```
-   http://localhost:3000
-   ```
+2. Open your browser and visit `http://localhost:3000`
 
 ## Technology Stack
 
 - **Frontend**: HTML, CSS, JavaScript
-- **Backend**: Node.js with Express
-- **AI APIs**: OpenAI API (GPT-4o, GPT-4o-mini), Anthropic API (Claude-3.7-Sonnet)
+- **Backend**: Node.js, Express
+- **APIs**: OpenAI API (GPT-4o and GPT-4o-mini), Anthropic API (Claude-3.7-Sonnet)
 
-## Visual Design
+## Design Philosophy
 
-The game's interface combines Wabi-Sabi aesthetics (appreciation for imperfection and natural simplicity) with Brutalism (emphasis on raw functionality and visual clarity).
-
-- **Color Palette**: Warm greys, muted olive green, rustic copper, pale cream
-- **Typography**: Heavy-set sans-serif fonts with occasional handwritten-style annotations
-- **Textures**: Background and interaction spaces mimic coarse paper or rough concrete
+The interface is inspired by a combination of Wabi-Sabi (appreciation for imperfection and natural simplicity) and Brutalism (emphasis on raw functionality and visual clarity).
 
 ## License
 

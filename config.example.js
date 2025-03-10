@@ -1,18 +1,11 @@
-/**
- * Example configuration file for Signal & Noise
- * 
- * To set up:
- * 1. Copy this file to config.js
- * 2. Add your API keys below
- * 
- * DO NOT commit config.js to version control.
- * It is included in .gitignore to prevent accidental exposure of keys.
- */
-
+// Rename this file to config.js and add your API keys
 module.exports = {
-  // OpenAI API key - get from https://platform.openai.com/account/api-keys
-  openaiApiKey: 'your_openai_api_key_here',
+  // OpenAI API key for GPT-4o and GPT-4o-mini
+  OPENAI_API_KEY: 'your-openai-api-key',
   
-  // Anthropic API key - get from https://console.anthropic.com/settings/keys 
-  anthropicApiKey: 'your_anthropic_api_key_here'
+  // Anthropic API key for Claude-3.7-Sonnet
+  ANTHROPIC_API_KEY: 'your-anthropic-api-key',
+  
+  // Port for the server
+  PORT: 3000
 };
