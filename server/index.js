@@ -79,12 +79,13 @@ app.post('/api/observer-guess', async (req, res) => {
     console.log(`Observer attempting to guess secret word: ${secretWord}`);
     
     // Call the AI service to get an observer guess
-    const { guess, isCorrect } = await apiService.getObserverGuess(category, messages, secretWord);
+    const { guess, isCorrect, message } = await apiService.getObserverGuess(category, messages, secretWord);
     
     res.json({
       success: true,
       guess: guess,
-      isCorrect: isCorrect
+      isCorrect: isCorrect,
+      message: message
     });
   } catch (error) {
     console.error('Error getting observer guess:', error);
@@ -103,12 +104,13 @@ app.post('/api/receiver-guess', async (req, res) => {
     console.log(`Receiver attempting to guess secret word: ${secretWord}`);
     
     // Call the AI service to get a receiver guess
-    const { guess, isCorrect } = await apiService.getReceiverGuess(category, messages, secretWord);
+    const { guess, isCorrect, message } = await apiService.getReceiverGuess(category, messages, secretWord);
     
     res.json({
       success: true,
       guess: guess,
-      isCorrect: isCorrect
+      isCorrect: isCorrect,
+      message: message
     });
   } catch (error) {
     console.error('Error getting receiver guess:', error);

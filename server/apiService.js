@@ -69,12 +69,22 @@ RULES:
 3. Make your message specific enough that someone who knows what to look for (the Receiver) can decode it, but ambiguous enough that a third party (the Observer) would be misled.
 4. If this is Loop 1, introduce initial clues. For later loops, refine your approach based on the Receiver's feedback.
 5. Keep your message concise, preferably 2-3 sentences.
-6. Be creative and strategic - this is about subtle communication.
+6. You MUST structure your response with <reasoning> tags for your thought process and <message> tags for your final message.
+7. ONLY the content inside <message> tags will be sent to the Receiver.
 
 The SECRET WORD is: "{{secretWord}}"
 Category: {{category}}
 
-Craft your message:`,
+First think about your clues and strategy:
+<reasoning>
+Analyze the secret word, brainstorm associations, and decide how to craft a message that hints at it indirectly.
+Think about what would help the Receiver while potentially misleading the Observer.
+</reasoning>
+
+Then craft your final message:
+<message>
+Your subtle message here. Keep it concise (2-3 sentences).
+</message>`,
 
   observer: `You are the Observer in a secret word guessing game. You'll read the communications between a Sender and Receiver, and try to guess the SECRET WORD.
 
@@ -83,12 +93,22 @@ RULES:
 2. The Sender will never explicitly state the secret word.
 3. Analyze patterns, themes, possible wordplay, and other subtle indicators.
 4. Your goal is to guess the secret word before the Receiver does.
-5. IMPORTANT: Your response must contain a single-word guess clearly stated.
-6. Format your response like this: "My guess is: [word]" or "I think the secret word is [word]"
+5. You MUST structure your response with <reasoning> tags for your thought process and <message> tags for your final guess.
+6. ONLY the content inside <message> tags will be shown.
+7. In your final message, clearly state your guess in the format: "I think the secret word is [word]"
 
 Category: {{category}}
 
-Based on the conversation so far, what do you think the secret word is? Make your single-word guess in a clear format:`,
+First analyze the conversation and think through possible words:
+<reasoning>
+Review all messages exchanged so far, looking for patterns, themes, wordplay, and subtle clues.
+Consider how the clues relate to the category and what word they might be hinting at.
+</reasoning>
+
+Then make your final guess:
+<message>
+I think the secret word is "[single word]"
+</message>`,
 
   receiver: `You are the Receiver in a secret word communication game. The Sender knows a SECRET WORD and is trying to help you guess it through subtle hints, while preventing a third-party Observer from guessing it.
 
@@ -96,12 +116,22 @@ RULES:
 1. The Sender has provided a message containing subtle clues about the secret word.
 2. The Sender will never explicitly state the secret word.
 3. Look for patterns, themes, wordplay, and other subtle indicators.
-4. IMPORTANT: Your response must contain a single-word guess clearly stated.
-5. Format your response like this: "My guess is: [word]" or "I think the secret word is [word]"
+4. You MUST structure your response with <reasoning> tags for your thought process and <message> tags for your final guess.
+5. ONLY the content inside <message> tags will be shown.
+6. In your final message, clearly state your guess in the format: "I think the secret word is [word]"
 
 Category: {{category}}
 
-Based on the message(s) from the Sender, what do you think the secret word is? Make your single-word guess in a clear format:`,
+First analyze the Sender's message and think through possible words:
+<reasoning>
+Carefully examine the Sender's message(s) for clues, themes, metaphors, or wordplay.
+Consider how the clues relate to the category and what word they might be hinting at.
+</reasoning>
+
+Then make your final guess:
+<message>
+I think the secret word is "[single word]"
+</message>`,
 
   receiverResponse: `You are the Receiver in a secret word communication game. The Sender knows a SECRET WORD and is trying to help you guess it.
 
@@ -111,11 +141,21 @@ RULES:
 1. Don't explicitly ask what the word is.
 2. Share your thought process about how you arrived at your guess.
 3. Ask for specific types of clues or clarification.
-4. Keep your response brief and focused.
+4. You MUST structure your response with <reasoning> tags for your thought process and <message> tags for your final response.
+5. ONLY the content inside <message> tags will be sent to the Sender.
 
 Category: {{category}}
 
-Craft a helpful response to the Sender:`,
+First reflect on your incorrect guess and what might help:
+<reasoning>
+Think about why your guess was wrong and what additional information would help you get closer.
+Consider what aspects of the clue led you astray and what clarification would be most helpful.
+</reasoning>
+
+Then craft your response to the Sender:
+<message>
+Your brief explanation of your thinking and request for specific clues or clarification.
+</message>`,
 
   senderRefined: `You are the Sender in a secret word communication game. You have a SECRET WORD that you need to help the Receiver guess, while preventing the Observer from guessing it.
 
@@ -128,11 +168,22 @@ RULES:
 4. Be more precise while still maintaining ambiguity for the Observer.
 5. Keep your message concise, preferably 2-3 sentences.
 6. Remember this is loop {{loop}} of 4 possible loops.
+7. You MUST structure your response with <reasoning> tags for your thought process and <message> tags for your final message.
+8. ONLY the content inside <message> tags will be sent to the Receiver.
 
 The SECRET WORD is: "{{secretWord}}"
 Category: {{category}}
 
-Craft your refined message:`
+First analyze the Receiver's feedback and plan your refined approach:
+<reasoning>
+Consider what clues worked, what didn't, and how to address the Receiver's specific questions.
+Think of new angles or clarifications that might help without making it too obvious to the Observer.
+</reasoning>
+
+Then craft your refined message:
+<message>
+Your refined message with clearer clues. Keep it concise (2-3 sentences).
+</message>`
 };
 
 // Helper function to choose the API client based on model name
@@ -215,9 +266,38 @@ const callAnthropic = async (messages, modelName = 'claude-3-7-sonnet-20250219')
   }
 };
 
+// Function to extract the message content from between <message> tags
+const extractMessage = (response) => {
+  console.log("Processing response for message extraction");
+  
+  // Extract content between <message> tags
+  const messageMatch = /<message>([\s\S]*?)<\/message>/i.exec(response);
+  if (messageMatch && messageMatch[1]) {
+    const message = messageMatch[1].trim();
+    console.log("Found message content:", message);
+    return message;
+  }
+  
+  console.log("No <message> tags found, returning full response");
+  return response.trim();
+};
+
+// Function to extract the reasoning content from between <reasoning> tags
+const extractReasoning = (response) => {
+  const reasoningMatch = /<reasoning>([\s\S]*?)<\/reasoning>/i.exec(response);
+  if (reasoningMatch && reasoningMatch[1]) {
+    return reasoningMatch[1].trim();
+  }
+  return '';
+};
+
 // Function to extract a single word guess from a response
 const extractGuess = (response) => {
   console.log("Full response for guess extraction:", response);
+  
+  // First extract just the message content
+  const messageContent = extractMessage(response);
+  console.log("Extracted message content:", messageContent);
   
   // First, look for common guess patterns like "I guess: [word]" or "My guess is [word]"
   const guessPatterns = [
@@ -232,7 +312,7 @@ const extractGuess = (response) => {
   ];
   
   for (const pattern of guessPatterns) {
-    const match = response.match(pattern);
+    const match = messageContent.match(pattern);
     if (match && match[1]) {
       console.log(`Pattern match found: ${pattern} → "${match[1].toLowerCase()}"`);
       return match[1].toLowerCase();
@@ -241,14 +321,14 @@ const extractGuess = (response) => {
   
   // Look for any word in quotation marks as a potential guess
   const quotesPattern = /["']([a-zA-Z]+)["']/i;
-  const quotesMatch = response.match(quotesPattern);
+  const quotesMatch = messageContent.match(quotesPattern);
   if (quotesMatch && quotesMatch[1]) {
     console.log(`Quotes pattern match found: "${quotesMatch[1].toLowerCase()}"`);
     return quotesMatch[1].toLowerCase();
   }
   
   // If no pattern matches, look at the last sentence for a simple word answer
-  const sentences = response.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0);
+  const sentences = messageContent.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0);
   if (sentences.length > 0) {
     const lastSentence = sentences[sentences.length - 1].trim();
     if (lastSentence.split(/\s+/).length <= 3) { // If it's a short sentence, likely just the answer
@@ -261,8 +341,8 @@ const extractGuess = (response) => {
     }
   }
   
-  // Last resort: return the last word in the response
-  const words = response.split(/\s+/).filter(word => word.length > 0);
+  // Last resort: return the last word in the message
+  const words = messageContent.split(/\s+/).filter(word => word.length > 0);
   if (words.length > 0) {
     // Clean up the word (remove punctuation)
     const guess = words[words.length - 1].replace(/[^a-zA-Z]/g, '').toLowerCase();
@@ -279,11 +359,24 @@ const getSenderMessage = async (secretWord, category, messages, loop) => {
   const formattedMessages = formatMessages('sender', messages, { secretWord, category, loop });
   // In a full implementation, you would choose between OpenAI and Anthropic based on the user's selection
   try {
-    return await callOpenAI(formattedMessages);
+    const response = await callOpenAI(formattedMessages);
+    console.log("Sender raw response:", response.substring(0, 100) + "...");
+    
+    // Extract just the message part
+    const message = extractMessage(response);
+    
+    // Log reasoning separately (not shown to users)
+    const reasoning = extractReasoning(response);
+    if (reasoning) {
+      console.log("Sender reasoning:", reasoning);
+    }
+    
+    return message;
   } catch (error) {
     console.error('Error getting sender message:', error);
     // Fallback to Anthropic if OpenAI fails
-    return await callAnthropic(formattedMessages);
+    const response = await callAnthropic(formattedMessages);
+    return extractMessage(response);
   }
 };
 
@@ -296,16 +389,30 @@ const getObserverGuess = async (category, messages, secretWord) => {
     const response = await callAnthropic(formattedMessages);
     console.log("Observer raw response:", response.substring(0, 100) + "...");
     
-    const guess = extractGuess(response);
+    // Extract just the message part
+    const messageContent = extractMessage(response);
+    
+    // Log reasoning separately (not shown to users)
+    const reasoning = extractReasoning(response);
+    if (reasoning) {
+      console.log("Observer reasoning:", reasoning);
+    }
+    
+    // Extract the guess from the message content
+    const guess = extractGuess(messageContent);
     console.log("Extracted observer guess:", guess);
     
     const isCorrect = wordService.checkGuess(guess, secretWord);
     console.log(`Observer guess correct? ${isCorrect}`);
     
-    return { guess, isCorrect };
+    return { 
+      guess, 
+      isCorrect,
+      message: messageContent 
+    };
   } catch (error) {
     console.error('Error getting observer guess:', error);
-    return { guess: 'API Error', isCorrect: false };
+    return { guess: 'API Error', isCorrect: false, message: "Error getting response" };
   }
 };
 
@@ -318,16 +425,30 @@ const getReceiverGuess = async (category, messages, secretWord) => {
     const response = await callOpenAI(formattedMessages);
     console.log("Receiver raw response:", response.substring(0, 100) + "...");
     
-    const guess = extractGuess(response);
+    // Extract just the message part
+    const messageContent = extractMessage(response);
+    
+    // Log reasoning separately (not shown to users)
+    const reasoning = extractReasoning(response);
+    if (reasoning) {
+      console.log("Receiver reasoning:", reasoning);
+    }
+    
+    // Extract the guess from the message content
+    const guess = extractGuess(messageContent);
     console.log("Extracted receiver guess:", guess);
     
     const isCorrect = wordService.checkGuess(guess, secretWord);
     console.log(`Receiver guess correct? ${isCorrect}`);
     
-    return { guess, isCorrect };
+    return { 
+      guess, 
+      isCorrect,
+      message: messageContent 
+    };
   } catch (error) {
     console.error('Error getting receiver guess:', error);
-    return { guess: 'API Error', isCorrect: false };
+    return { guess: 'API Error', isCorrect: false, message: "Error getting response" };
   }
 };
 
@@ -335,12 +456,25 @@ const getReceiverResponse = async (category, messages) => {
   const formattedMessages = formatMessages('receiverResponse', messages, { category });
   
   try {
-    // In a full implementation, you would choose based on user selection
-    return await callOpenAI(formattedMessages);
+    console.log("Requesting receiver response from OpenAI...");
+    const response = await callOpenAI(formattedMessages);
+    console.log("Receiver response raw:", response.substring(0, 100) + "...");
+    
+    // Extract just the message part
+    const messageContent = extractMessage(response);
+    
+    // Log reasoning separately (not shown to users)
+    const reasoning = extractReasoning(response);
+    if (reasoning) {
+      console.log("Receiver response reasoning:", reasoning);
+    }
+    
+    return messageContent;
   } catch (error) {
     console.error('Error getting receiver response:', error);
     // Fallback to Anthropic if OpenAI fails
-    return await callAnthropic(formattedMessages);
+    const response = await callAnthropic(formattedMessages);
+    return extractMessage(response);
   }
 };
 
@@ -348,12 +482,25 @@ const getSenderRefinedMessage = async (secretWord, category, messages, loop) => 
   const formattedMessages = formatMessages('senderRefined', messages, { secretWord, category, loop });
   
   try {
-    // In a full implementation, you would choose based on user selection
-    return await callOpenAI(formattedMessages);
+    console.log("Requesting refined sender message from OpenAI...");
+    const response = await callOpenAI(formattedMessages);
+    console.log("Refined sender raw response:", response.substring(0, 100) + "...");
+    
+    // Extract just the message part
+    const messageContent = extractMessage(response);
+    
+    // Log reasoning separately (not shown to users)
+    const reasoning = extractReasoning(response);
+    if (reasoning) {
+      console.log("Refined sender reasoning:", reasoning);
+    }
+    
+    return messageContent;
   } catch (error) {
     console.error('Error getting sender refined message:', error);
     // Fallback to Anthropic if OpenAI fails
-    return await callAnthropic(formattedMessages);
+    const response = await callAnthropic(formattedMessages);
+    return extractMessage(response);
   }
 };
 

@@ -260,8 +260,9 @@ document.addEventListener('DOMContentLoaded', () => {
       removeThinking();
       
       if (data.success) {
-        // Add the observer's guess to the display
-        addMessage('observer', `I think the secret word is "${data.guess}"`);
+        // Add the observer's message to the display (or fallback to formatted guess)
+        const displayMessage = data.message || `I think the secret word is "${data.guess}"`;
+        addMessage('observer', displayMessage);
         
         // Check if the guess is correct
         if (data.isCorrect) {
@@ -317,8 +318,9 @@ document.addEventListener('DOMContentLoaded', () => {
       removeThinking();
       
       if (data.success) {
-        // Add the receiver's guess to the display
-        addMessage('receiver', `I think the secret word is "${data.guess}"`);
+        // Add the receiver's message to the display (or fallback to formatted guess)
+        const displayMessage = data.message || `I think the secret word is "${data.guess}"`;
+        addMessage('receiver', displayMessage);
         
         // Check if the guess is correct
         if (data.isCorrect) {
