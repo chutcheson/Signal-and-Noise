@@ -584,7 +584,17 @@ function endGame() {
 // Add a message to the message area
 function addMessage(type, role, content) {
   const messageDiv = document.createElement('div');
-  messageDiv.className = `message ${type}`;
+  
+  if (type === 'thinking') {
+    // Thinking messages get the thinking class
+    messageDiv.className = `message thinking`;
+  } else {
+    // Use the role for styling (sender, receiver, or observer)
+    const roleClass = role.toLowerCase().includes('observer') ? 'observer' : 
+                     (role.toLowerCase().includes('receiver') ? 'receiver' : 'sender');
+    
+    messageDiv.className = `message ${roleClass}`;
+  }
   
   const roleLabel = document.createElement('div');
   roleLabel.className = 'role-label';
@@ -605,7 +615,12 @@ function addMessage(type, role, content) {
 // Add a guess message with correct/incorrect indication
 function addGuessMessage(type, role, guess, correct) {
   const messageDiv = document.createElement('div');
-  messageDiv.className = `message ${type}`;
+  
+  // Use the role for styling (sender, receiver, or observer)
+  const roleClass = role.toLowerCase().includes('observer') ? 'observer' : 
+                   (role.toLowerCase().includes('receiver') ? 'receiver' : 'sender');
+  
+  messageDiv.className = `message ${roleClass}`;
   
   const roleLabel = document.createElement('div');
   roleLabel.className = 'role-label';

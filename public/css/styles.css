@@ -377,16 +377,29 @@ label {
   z-index: 1;
 }
 
+/* Sender messages are left-aligned */
 .message.sender {
   align-self: flex-start;
   background-color: rgba(174, 108, 88, 0.1);
   border-left: 3px solid var(--accent-color);
 }
 
-.message.receiver {
+/* Both observer and receiver messages are right-aligned */
+.message.receiver, .message.observer {
   align-self: flex-end;
+  border-right: 3px solid;
+}
+
+/* Receiver messages have primary color */
+.message.receiver {
   background-color: rgba(126, 128, 96, 0.1);
-  border-right: 3px solid var(--primary-color);
+  border-right-color: var(--primary-color);
+}
+
+/* Observer messages have secondary color */
+.message.observer {
+  background-color: rgba(181, 129, 109, 0.1);
+  border-right-color: var(--secondary-color);
 }
 
 .message.thinking {
