@@ -86,8 +86,8 @@
     </div>
   </div>
 
-  <!-- Result Overlay (initially hidden) -->
-  <div id="result-overlay" class="overlay" style="display: none;">
+  <!-- Result Summary (shown at game end, initially hidden) -->
+  <div id="result-summary" class="result-summary" style="display: none;">
     <div class="result-container">
       <h2>Game Over</h2>
       <p>The secret word was: <span id="secret-word">word</span></p>
@@ -102,7 +102,10 @@
         </div>
       </div>
       <p id="winning-team">Sender/Receiver Team Wins!</p>
-      <button class="primary-btn" id="new-game-btn">Play Again</button>
+      <div class="result-actions">
+        <button class="secondary-btn" id="continue-viewing-btn">Continue Viewing</button>
+        <button class="primary-btn" id="new-game-btn">Play Again</button>
+      </div>
     </div>
   </div>
 

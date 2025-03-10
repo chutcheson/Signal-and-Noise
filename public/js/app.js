@@ -54,11 +54,12 @@ const elements = {
   roundHistory: document.getElementById('round-history'),
   senderReceiverScore: document.getElementById('sender-receiver-score'),
   observerScore: document.getElementById('observer-score'),
-  resultOverlay: document.getElementById('result-overlay'),
+  resultSummary: document.getElementById('result-summary'),
   secretWord: document.getElementById('secret-word'),
   finalSenderScore: document.getElementById('final-sender-score'),
   finalObserverScore: document.getElementById('final-observer-score'),
   winningTeam: document.getElementById('winning-team'),
+  continueViewingBtn: document.getElementById('continue-viewing-btn'),
   newGameBtn: document.getElementById('new-game-btn')
 };
 
@@ -100,9 +101,14 @@ function attachEventListeners() {
   // Setup form submission
   elements.setupForm.addEventListener('submit', handleGameStart);
   
+  // Continue viewing button - dismiss summary but keep game visible
+  elements.continueViewingBtn.addEventListener('click', () => {
+    elements.resultSummary.style.display = 'none';
+  });
+  
   // New game button
   elements.newGameBtn.addEventListener('click', () => {
-    elements.resultOverlay.style.display = 'none';
+    elements.resultSummary.style.display = 'none';
     elements.gameScreen.style.display = 'none';
     elements.setupScreen.style.display = 'block';
   });
@@ -458,7 +464,8 @@ function endGame() {
     elements.winningTeam.textContent = "It's a Tie!";
   }
   
-  elements.resultOverlay.style.display = 'flex';
+  // Show result summary without blocking the game view
+  elements.resultSummary.style.display = 'block';
 }
 
 // Add a message to the message area
