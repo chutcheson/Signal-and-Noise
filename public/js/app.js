@@ -627,10 +627,10 @@ function addMessage(type, role, content) {
   
   elements.messageArea.appendChild(messageDiv);
   
-  // Scroll to bottom with a small delay to ensure proper rendering
+  // Scroll to bottom with a small delay to ensure proper rendering and animation
   setTimeout(() => {
-    elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
-  }, 50);
+    smoothScrollToBottom();
+  }, 100);
 }
 
 // Add a guess message with correct/incorrect indication
@@ -661,10 +661,10 @@ function addGuessMessage(type, role, guess, correct) {
   
   elements.messageArea.appendChild(messageDiv);
   
-  // Scroll to bottom with a small delay to ensure proper rendering
+  // Scroll to bottom with a small delay to ensure proper rendering and animation
   setTimeout(() => {
-    elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
-  }, 50);
+    smoothScrollToBottom();
+  }, 100);
 }
 
 // Remove temporary thinking/loading messages from the UI (but keep reasoning messages)
@@ -682,6 +682,20 @@ function removeTempThinkingMessages() {
 // Legacy function maintained for backward compatibility, but modified to use our new approach
 function removeThinkingMessages() {
   removeTempThinkingMessages();
+}
+
+// Smooth scroll to the bottom of the message area
+function smoothScrollToBottom() {
+  // Use smooth scrolling when available
+  if ('scrollBehavior' in document.documentElement.style) {
+    elements.messageArea.scrollTo({
+      top: elements.messageArea.scrollHeight,
+      behavior: 'smooth'
+    });
+  } else {
+    // Fallback for browsers that don't support smooth scrolling
+    elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
+  }
 }
 
 // Track which round is being viewed
