@@ -1,43 +1,28 @@
-const fs = require('fs').promises;
+const fs = require('fs');
 const path = require('path');
+const util = require('util');
 
-// Path to the dictionary file
-const DICTIONARY_PATH = path.join(__dirname, '../top_1000_nouns.txt');
+const readFile = util.promisify(fs.readFile);
 
-// Cache for the dictionary
-let dictionary = null;
-
-// Function to load the dictionary from file
-async function loadDictionary() {
-  if (dictionary) {
-    return dictionary;
-  }
-  
+/**
+ * Get a random word from the word list
+ * @returns {Promise<string>} A random word
+ */
+async function getRandomWord() {
   try {
-    const data = await fs.readFile(DICTIONARY_PATH, 'utf8');
-    const lines = data.split('\n').filter(line => line.trim() !== '');
+    const filePath = path.join(__dirname, '../top_1000_nouns.txt');
+    const data = await readFile(filePath, 'utf8');
+    const words = data.split('\n').filter(word => word.trim().length > 0);
     
-    // Parse the word from each line (format: "     1 time")
-    dictionary = lines.map(line => {
-      const parts = line.trim().split(/\s+/);
-      // Return the word (last part of the line)
-      return parts[parts.length - 1];
-    });
-    
-    return dictionary;
+    // Get a random word from the list
+    const randomIndex = Math.floor(Math.random() * words.length);
+    return words[randomIndex].trim();
   } catch (error) {
-    console.error('Error loading dictionary:', error);
-    throw new Error('Failed to load dictionary');
+    console.error('Error reading word list:', error);
+    throw error;
   }
-}
-
-// Function to get a random secret word
-async function getRandomSecret() {
-  const words = await loadDictionary();
-  const randomIndex = Math.floor(Math.random() * words.length);
-  return words[randomIndex];
 }
 
 module.exports = {
-  getRandomSecret
+  getRandomWord
 };

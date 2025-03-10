@@ -4,159 +4,108 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Signal & Noise: AI Secret Exchange</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div id="app">
-    <!-- Start Screen -->
-    <div id="start-screen" class="screen">
+  <div class="app-container">
+    <header>
       <h1>Signal & Noise</h1>
-      <h2>AI Secret Exchange</h2>
-      
-      <div class="game-setup">
-        <div class="model-selection">
-          <h3>Select Models</h3>
-          
-          <div class="selection-group">
-            <label for="sender-receiver-model">Sender/Receiver Model:</label>
-            <select id="sender-receiver-model"></select>
-          </div>
-          
-          <div class="selection-group">
-            <label for="observer-model">Observer Model:</label>
-            <select id="observer-model"></select>
-          </div>
+      <div class="score-container">
+        <div class="team-score">
+          <p class="team-name">Sender/Receiver</p>
+          <p class="score" id="sender-receiver-score">0</p>
         </div>
-        
-        <div class="game-options">
-          <h3>Game Options</h3>
-          
-          <div class="selection-group">
-            <label for="round-count">Number of Rounds:</label>
-            <select id="round-count">
-              <option value="2">2 Rounds</option>
-              <option value="6" selected>6 Rounds</option>
-              <option value="12">12 Rounds</option>
-            </select>
-          </div>
+        <p class="score-divider">:</p>
+        <div class="team-score">
+          <p class="team-name">Observer</p>
+          <p class="score" id="observer-score">0</p>
         </div>
       </div>
-      
-      <button id="start-game" class="btn btn-primary">Start Game</button>
+    </header>
+
+    <!-- Game Setup Screen -->
+    <div id="setup-screen" class="game-setup">
+      <h2>Game Setup</h2>
+      <p class="info-text">
+        In this game, the Sender tries to communicate a secret word to the Receiver while preventing the Observer from figuring it out. Select which AI models will play each role.
+      </p>
+      <form class="setup-form" id="setup-form">
+        <div class="form-group">
+          <label for="sender-receiver-model">Sender & Receiver Model:</label>
+          <select class="model-select" id="sender-receiver-model" required>
+            <!-- Will be populated dynamically -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="observer-model">Observer Model:</label>
+          <select class="model-select" id="observer-model" required>
+            <!-- Will be populated dynamically -->
+          </select>
+        </div>
+        <button type="submit" class="primary-btn">Start Game</button>
+      </form>
     </div>
-    
-    <!-- Game Screen -->
-    <div id="game-screen" class="screen hidden">
-      <div class="game-header">
+
+    <!-- Game Board Screen (initially hidden) -->
+    <div id="game-screen" style="display: none;">
+      <div class="game-board">
+        <!-- Game Info Bar -->
         <div class="game-info">
-          <div class="secret-word">
-            <span class="label">Secret:</span>
-            <span id="current-secret"></span>
+          <div class="round-info">
+            <p class="label">Round</p>
+            <p class="value" id="round-number">1</p>
           </div>
-          
-          <div class="game-status">
-            <span class="label">Round:</span>
-            <span id="current-round">1</span>/<span id="total-rounds">6</span>
-            
-            <span class="label">Loop:</span>
-            <span id="current-loop">1</span>/4
-            
-            <span class="label">Phase:</span>
-            <span id="current-phase">Sender</span>
+          <div class="game-word-container">
+            <p class="label">Secret Word</p>
+            <p class="value" id="game-word">****</p>
           </div>
-        </div>
-        
-        <div class="scores">
-          <div class="team-score">
-            <span class="team-name">Team 1 (SR)</span>
-            <span id="team-1-score">0</span>
+          <div class="active-team-container">
+            <p class="label">Current Phase</p>
+            <p class="value" id="current-phase">Sender's Turn</p>
           </div>
-          
-          <div class="team-score">
-            <span class="team-name">Team 2 (O)</span>
-            <span id="team-2-score">0</span>
+          <div class="role-info">
+            <p class="label">Models</p>
+            <p class="value" id="models-display">-</p>
           </div>
         </div>
         
-        <div class="models-info">
-          <div class="model-info">
-            <span class="label">Sender/Receiver Model:</span>
-            <span id="sr-model-display"></span>
-          </div>
-          
-          <div class="model-info">
-            <span class="label">Observer Model:</span>
-            <span id="o-model-display"></span>
-          </div>
-        </div>
-      </div>
-      
-      <div class="game-content">
-        <div class="interaction-area">
-          <!-- Messages and interactions will be displayed here -->
-          <div id="message-container"></div>
-          
-          <div id="thinking-area" class="hidden">
-            <div class="thinking-indicator">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </div>
-            <div class="thinking-label">Model thinking...</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Results Screen -->
-    <div id="results-screen" class="screen hidden">
-      <h1>Game Results</h1>
-      
-      <div class="final-scores">
-        <div class="team-final-score">
-          <h2>Team 1 (Sender/Receiver)</h2>
-          <div class="score" id="final-team-1-score">0</div>
+        <!-- Message Area -->
+        <div class="message-area" id="message-area">
+          <!-- Messages will be added here dynamically -->
         </div>
         
-        <div class="team-final-score">
-          <h2>Team 2 (Observer)</h2>
-          <div class="score" id="final-team-2-score">0</div>
+        <!-- History Panel -->
+        <div class="history-panel">
+          <h3>Round History</h3>
+          <div class="round-list" id="round-history">
+            <!-- Round history will be added here dynamically -->
+          </div>
         </div>
       </div>
-      
-      <div class="round-history" id="round-history">
-        <!-- Round history will be populated here -->
-      </div>
-      
-      <button id="new-game" class="btn btn-primary">New Game</button>
     </div>
   </div>
-  
-  <!-- Templates -->
-  <template id="message-template">
-    <div class="message-box">
-      <div class="message-header">
-        <span class="role"></span>
+
+  <!-- Result Overlay (initially hidden) -->
+  <div id="result-overlay" class="overlay" style="display: none;">
+    <div class="result-container">
+      <h2>Game Over</h2>
+      <p>The secret word was: <span id="secret-word">word</span></p>
+      <div class="final-scores">
+        <div class="team-score">
+          <p class="team-name">Sender/Receiver</p>
+          <p class="score" id="final-sender-score">0</p>
+        </div>
+        <div class="team-score">
+          <p class="team-name">Observer</p>
+          <p class="score" id="final-observer-score">0</p>
+        </div>
       </div>
-      <div class="message-content"></div>
-      <div class="message-thinking hidden"></div>
+      <p id="winning-team">Sender/Receiver Team Wins!</p>
+      <button class="primary-btn" id="new-game-btn">Play Again</button>
     </div>
-  </template>
-  
-  <template id="guess-template">
-    <div class="guess-box">
-      <div class="guess-header">
-        <span class="role"></span> Guess
-      </div>
-      <div class="guess-thinking hidden"></div>
-      <div class="guess-content">
-        <span class="guess-label">Guess:</span>
-        <span class="guess-word"></span>
-        <span class="guess-result"></span>
-      </div>
-    </div>
-  </template>
-  
-  <script src="app.js"></script>
+  </div>
+
+  <script src="js/app.js"></script>
 </body>
 </html>
