@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const OpenAI = require('openai');
-const Anthropic = require('@anthropic-ai/sdk');
+const { Anthropic } = require('@anthropic-ai/sdk');
 const wordService = require('./wordService');
 
 // Get API keys from multiple sources in order of preference
