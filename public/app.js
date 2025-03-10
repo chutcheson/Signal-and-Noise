@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameState.category = data.category;
         
         // Log the start of the round
-        addGameLogEntry(`Round ${gameState.currentRound} started. Category: ${gameState.category}`, 'phase');
+        addGameLogEntry(`Round ${gameState.currentRound} started.`, 'phase');
         
         // Update the game info display
         updateGameInfoDisplay();
@@ -182,8 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function processCategoryAnnouncement() {
-    // Add a system message about the category
-    addMessage('system', `The secret word belongs to the category: ${gameState.category}`);
+    // Add a system message about the word being a noun
+    addMessage('system', `The secret word is a common noun.`);
   }
 
   async function executePhase1() {

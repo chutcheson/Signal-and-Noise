@@ -73,7 +73,7 @@ RULES:
 7. ONLY the content inside <message> tags will be sent to the Receiver.
 
 The SECRET WORD is: "{{secretWord}}"
-Category: {{category}}
+The secret word is a common noun.
 
 First think about your clues and strategy:
 <reasoning>
@@ -97,7 +97,7 @@ RULES:
 6. ONLY the content inside <message> tags will be shown.
 7. In your final message, clearly state your guess in the format: "I think the secret word is [word]"
 
-Category: {{category}}
+The secret word is a common noun.
 
 First analyze the conversation and think through possible words:
 <reasoning>
@@ -120,7 +120,7 @@ RULES:
 5. ONLY the content inside <message> tags will be shown.
 6. In your final message, clearly state your guess in the format: "I think the secret word is [word]"
 
-Category: {{category}}
+The secret word is a common noun.
 
 First analyze the Sender's message and think through possible words:
 <reasoning>
@@ -144,7 +144,7 @@ RULES:
 4. You MUST structure your response with <reasoning> tags for your thought process and <message> tags for your final response.
 5. ONLY the content inside <message> tags will be sent to the Sender.
 
-Category: {{category}}
+The secret word is a common noun.
 
 First reflect on your incorrect guess and what might help:
 <reasoning>
@@ -172,7 +172,7 @@ RULES:
 8. ONLY the content inside <message> tags will be sent to the Receiver.
 
 The SECRET WORD is: "{{secretWord}}"
-Category: {{category}}
+The secret word is a common noun.
 
 First analyze the Receiver's feedback and plan your refined approach:
 <reasoning>

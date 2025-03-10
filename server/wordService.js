@@ -48,11 +48,11 @@ const getRandomCategory = () => {
   return CATEGORIES[randomIndex];
 };
 
-// Get a random word and category
+// Get a random word (no category)
 const getRandomWordAndCategory = () => {
   return {
     word: getRandomWord(),
-    category: getRandomCategory()
+    category: "Common Noun" // Always use the same category
   };
 };
 
