@@ -115,9 +115,15 @@ async function startGame() {
   gameState.initialObserverModel = elements.selects.observerModel.value;
   gameState.totalRounds = parseInt(elements.selects.roundCount.value, 10);
   
+  console.log('Selected SR model:', gameState.initialSenderReceiverModel);
+  console.log('Selected Observer model:', gameState.initialObserverModel);
+  
   // Set initial models
   gameState.senderReceiverModel = gameState.initialSenderReceiverModel;
   gameState.observerModel = gameState.initialObserverModel;
+  
+  console.log('Set senderReceiverModel to:', gameState.senderReceiverModel);
+  console.log('Set observerModel to:', gameState.observerModel);
   
   // Reset game state
   gameState.currentRound = 1;
@@ -143,13 +149,19 @@ function updateModelDisplay() {
 
 // Get display name for model
 function getModelDisplayName(modelId) {
-  // Extract just the base model name
-  if (modelId.startsWith('gpt')) {
-    return modelId.split('-').slice(0, 2).join('-');
-  } else if (modelId.startsWith('claude')) {
-    // Extract "claude-3-7-sonnet" from the full model ID
-    return modelId.split('-').slice(0, 4).join('-');
+  console.log('Getting display name for model:', modelId);
+  
+  // Handle specific model cases
+  if (modelId === 'gpt-4o-mini') {
+    return 'GPT-4o-mini';
+  } else if (modelId === 'gpt-4o') {
+    return 'GPT-4o';
+  } else if (modelId.startsWith('claude-3-7-sonnet')) {
+    return 'Claude-3.7-Sonnet';
   }
+  
+  // Default case - just return the ID
+  console.log('No specific display name match, returning original ID');
   return modelId;
 }
 
@@ -162,10 +174,15 @@ async function startRound() {
   
   // Swap models every two rounds (or based on your desired frequency)
   if (gameState.currentRound % 2 === 0) {
+    console.log('Swapping models for round', gameState.currentRound);
+    console.log('Before swap - SR:', gameState.senderReceiverModel, 'Observer:', gameState.observerModel);
+    
     // Swap sender/receiver and observer models
     const temp = gameState.senderReceiverModel;
     gameState.senderReceiverModel = gameState.observerModel;
     gameState.observerModel = temp;
+    
+    console.log('After swap - SR:', gameState.senderReceiverModel, 'Observer:', gameState.observerModel);
     
     // Update model display
     updateModelDisplay();
@@ -188,8 +205,8 @@ async function startRound() {
   roundInfoElement.innerHTML = `
     <div class="message-header">Round ${gameState.currentRound}</div>
     <div class="message-content">
-      <strong>Sender/Receiver:</strong> ${getModelDisplayName(gameState.senderReceiverModel)}<br>
-      <strong>Observer:</strong> ${getModelDisplayName(gameState.observerModel)}<br>
+      <strong>Sender/Receiver Model:</strong> ${getModelDisplayName(gameState.senderReceiverModel)}<br>
+      <strong>Observer Model:</strong> ${getModelDisplayName(gameState.observerModel)}<br>
       <strong>Secret Word:</strong> ${gameState.currentSecret}
     </div>
   `;
