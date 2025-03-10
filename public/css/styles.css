@@ -429,29 +429,36 @@ label {
   border: 1px dashed var(--text-color);
   background-color: rgba(0, 0, 0, 0.03);
   opacity: 0.9;
-  max-width: 80%;
+  max-width: 70%; /* Narrower default width */
   font-style: italic;
   margin-bottom: 5px;
   padding: 10px;
+  font-size: 13px; /* Slightly smaller text */
 }
 
 /* Align reasoning messages based on their role */
 .message.reasoning[data-role="Sender (Reasoning)"] {
   align-self: flex-start; /* Left-aligned for Sender */
-  border-left: 2px dashed var(--accent-color);
+  border-left: 3px dashed var(--accent-color);
   background-color: rgba(174, 108, 88, 0.05);
+  max-width: 60%; /* Even narrower for sender */
+  margin-left: 10px; /* Add some indent */
 }
 
 .message.reasoning[data-role="Observer (Reasoning)"] {
   align-self: flex-end; /* Right-aligned for Observer */
-  border-right: 2px dashed var(--secondary-color);
+  border-right: 3px dashed var(--secondary-color);
   background-color: rgba(181, 129, 109, 0.05);
+  max-width: 65%; /* Slightly narrower for observer */
+  margin-right: 10px; /* Add some indent */
 }
 
 .message.reasoning[data-role="Receiver (Reasoning)"] {
   align-self: flex-end; /* Right-aligned for Receiver */
-  border-right: 2px dashed var(--primary-color);
+  border-right: 3px dashed var(--primary-color);
   background-color: rgba(126, 128, 96, 0.05);
+  max-width: 65%; /* Slightly narrower for receiver */
+  margin-right: 10px; /* Add some indent */
 }
 
 .message.round-heading {
@@ -470,6 +477,26 @@ label {
   font-weight: bold;
   margin-bottom: 5px;
   color: var(--text-color);
+}
+
+/* Custom styling for reasoning role labels */
+.message.reasoning .role-label {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.message.reasoning[data-role="Sender (Reasoning)"] .role-label {
+  color: var(--accent-color);
+}
+
+.message.reasoning[data-role="Observer (Reasoning)"] .role-label {
+  color: var(--secondary-color);
+}
+
+.message.reasoning[data-role="Receiver (Reasoning)"] .role-label {
+  color: var(--primary-color);
 }
 
 .guess {
