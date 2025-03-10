@@ -420,13 +420,23 @@ label {
   }
 }
 
+/* Fixed width variables for different message types */
+:root {
+  /* Fixed width values as percentages */
+  --sender-width: 48%;
+  --receiver-width: 48%;
+  --observer-width: 48%;
+  --thinking-width: 48%;
+  --reasoning-width: 48%;
+}
+
 .message {
   position: relative;
   padding: 15px;
   border: 1px solid var(--text-color);
   font-family: 'Space Mono', monospace;
   font-size: 14px;
-  max-width: 60%; /* Narrower default width to match reasoning */
+  width: var(--sender-width); /* Fixed default width */
   z-index: 1;
   
   /* Smooth animations for new messages */
@@ -450,8 +460,8 @@ label {
   align-self: flex-start;
   background-color: rgba(174, 108, 88, 0.1);
   border-left: 3px solid var(--accent-color);
-  max-width: 60%; /* Match sender reasoning width */
-  margin-left: 10px; /* Match sender reasoning indentation */
+  width: var(--sender-width);
+  margin-left: 10px;
   transform-origin: bottom left; /* Animation origin for sender */
 }
 
@@ -459,7 +469,7 @@ label {
 .message.receiver, .message.observer {
   align-self: flex-end;
   border-right: 3px solid;
-  margin-right: 10px; /* Match observer/receiver reasoning indentation */
+  margin-right: 10px;
   transform-origin: bottom right; /* Animation origin for observer/receiver */
 }
 
@@ -467,14 +477,14 @@ label {
 .message.receiver {
   background-color: rgba(126, 128, 96, 0.1);
   border-right-color: var(--primary-color);
-  max-width: 55%; /* Narrower width for receiver */
+  width: var(--receiver-width);
 }
 
 /* Observer messages have secondary color */
 .message.observer {
   background-color: rgba(181, 129, 109, 0.1);
   border-right-color: var(--secondary-color);
-  max-width: 58%; /* Slightly wider than receiver for distinction */
+  width: var(--observer-width);
 }
 
 .message.thinking {
@@ -482,8 +492,8 @@ label {
   background-color: rgba(0, 0, 0, 0.02); /* Very subtle background */
   opacity: 0.75;
   align-self: flex-end; /* Right-aligned */
-  max-width: 50%; /* Slightly narrower than regular messages */
-  margin-right: 10px; /* Match indentation of other right-aligned messages */
+  width: var(--thinking-width);
+  margin-right: 10px;
   font-style: italic; /* Italic text like reasoning */
   transform-origin: bottom right; /* Animation from right side */
 }
@@ -494,8 +504,8 @@ label {
   background-color: rgba(174, 108, 88, 0.05); /* Slight accent color tint */
   opacity: 0.75;
   align-self: flex-start; /* Left-aligned */
-  max-width: 50%; /* Slightly narrower than regular messages */
-  margin-left: 10px; /* Match indentation of sender messages */
+  width: var(--thinking-width);
+  margin-left: 10px;
   font-style: italic; /* Italic text like reasoning */
   transform-origin: bottom left; /* Animation from left side */
 }
@@ -504,7 +514,7 @@ label {
   border: 1px dashed var(--text-color);
   background-color: rgba(0, 0, 0, 0.03);
   opacity: 0.9;
-  max-width: 70%; /* Narrower default width */
+  width: var(--reasoning-width);
   font-style: italic;
   margin-bottom: 5px;
   padding: 10px;
@@ -528,7 +538,7 @@ label {
   align-self: flex-start; /* Left-aligned for Sender */
   border-left: 3px dashed var(--accent-color);
   background-color: rgba(174, 108, 88, 0.05);
-  max-width: 60%; /* Even narrower for sender */
+  width: var(--reasoning-width);
   margin-left: 10px; /* Add some indent */
 }
 
@@ -536,7 +546,7 @@ label {
   align-self: flex-end; /* Right-aligned for Observer */
   border-right: 3px dashed var(--secondary-color);
   background-color: rgba(181, 129, 109, 0.05);
-  max-width: 58%; /* Match observer message width */
+  width: var(--reasoning-width);
   margin-right: 10px; /* Add some indent */
 }
 
@@ -544,7 +554,7 @@ label {
   align-self: flex-end; /* Right-aligned for Receiver */
   border-right: 3px dashed var(--primary-color);
   background-color: rgba(126, 128, 96, 0.05);
-  max-width: 55%; /* Match receiver message width */
+  width: var(--reasoning-width);
   margin-right: 10px; /* Add some indent */
 }
 
