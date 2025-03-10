@@ -152,6 +152,9 @@ function attachEventListeners() {
     elements.resultSummary.style.display = 'none';
     elements.gameScreen.style.display = 'none';
     elements.setupScreen.style.display = 'block';
+    
+    // Remove game-active class to revert to normal layout
+    document.querySelector('.app-container').classList.remove('game-active');
   });
 }
 
@@ -174,6 +177,9 @@ async function handleGameStart(event) {
   // Update UI
   elements.setupScreen.style.display = 'none';
   elements.gameScreen.style.display = 'block';
+  
+  // Add game-active class to container for full-screen layout
+  document.querySelector('.app-container').classList.add('game-active');
   
   // Trigger custom event to update team labels with model names
   document.dispatchEvent(new Event('modelsSelected'));
