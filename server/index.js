@@ -47,13 +47,13 @@ app.get('/api/secret', async (req, res) => {
 
 app.post('/api/message', async (req, res) => {
   try {
-    const { model, role, message, secret, history } = req.body;
+    const { model, role, message, secret, history, senderReceiverModel, observerModel } = req.body;
     
-    if (!model || !role || !secret) {
+    if (!model || !role || !secret || !senderReceiverModel || !observerModel) {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
     
-    const response = await apiService.generateMessage(model, role, message, secret, history);
+    const response = await apiService.generateMessage(model, role, message, secret, history, senderReceiverModel, observerModel);
     res.json(response);
   } catch (error) {
     console.error('Error generating message:', error);
@@ -63,13 +63,13 @@ app.post('/api/message', async (req, res) => {
 
 app.post('/api/guess', async (req, res) => {
   try {
-    const { model, role, message, secret, history } = req.body;
+    const { model, role, message, secret, history, senderReceiverModel, observerModel } = req.body;
     
-    if (!model || !role || !secret) {
+    if (!model || !role || !secret || !senderReceiverModel || !observerModel) {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
     
-    const response = await apiService.generateGuess(model, role, message, secret, history);
+    const response = await apiService.generateGuess(model, role, message, secret, history, senderReceiverModel, observerModel);
     res.json(response);
   } catch (error) {
     console.error('Error generating guess:', error);

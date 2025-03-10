@@ -269,7 +269,9 @@ async function handleSenderPhase() {
         role: 'sender',
         message: lastReceiverMessage,
         secret: gameState.currentSecret,
-        history: apiHistory
+        history: apiHistory,
+        senderReceiverModel: gameState.senderReceiverModel,
+        observerModel: gameState.observerModel
       })
     });
     
@@ -323,7 +325,9 @@ async function handleObserverPhase() {
         role: 'observer',
         message: null,
         secret: gameState.currentSecret,
-        history: apiHistory
+        history: apiHistory,
+        senderReceiverModel: gameState.senderReceiverModel,
+        observerModel: gameState.observerModel
       })
     });
     
@@ -393,7 +397,9 @@ async function handleReceiverPhase() {
         role: 'receiver',
         message: lastSenderMessage,
         secret: gameState.currentSecret,
-        history: apiHistory
+        history: apiHistory,
+        senderReceiverModel: gameState.senderReceiverModel,
+        observerModel: gameState.observerModel
       })
     });
     
@@ -469,7 +475,9 @@ async function handleReceiverResponsePhase() {
         role: 'receiver',
         message: lastSenderMessage,
         secret: gameState.currentSecret,
-        history: apiHistory
+        history: apiHistory,
+        senderReceiverModel: gameState.senderReceiverModel,
+        observerModel: gameState.observerModel
       })
     });
     
