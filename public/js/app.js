@@ -772,12 +772,31 @@ function smoothScrollToBottom() {
       if (distanceFromBottom < 20) {
         elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
       } 
-      // Moderately close - use faster animation
+      // Moderately close - use medium-speed animation
       else if (distanceFromBottom < 100) {
-        elements.messageArea.scrollTo({
-          top: elements.messageArea.scrollHeight,
-          behavior: 'smooth'
-        });
+        const targetScrollTop = elements.messageArea.scrollHeight;
+        
+        // Use a custom animation for more control
+        const startTime = performance.now();
+        const startScrollTop = elements.messageArea.scrollTop;
+        const duration = 600; // Medium duration for smooth feel
+        
+        function scrollAnimation(currentTime) {
+          const elapsedTime = currentTime - startTime;
+          if (elapsedTime > duration) {
+            elements.messageArea.scrollTop = targetScrollTop;
+            return;
+          }
+          
+          // Smooth easing function
+          const t = elapsedTime / duration;
+          const progress = 1 - Math.pow(1 - t, 3.5);
+          
+          elements.messageArea.scrollTop = startScrollTop + (targetScrollTop - startScrollTop) * progress;
+          requestAnimationFrame(scrollAnimation);
+        }
+        
+        requestAnimationFrame(scrollAnimation);
       } 
       // Further away but still in "at bottom" zone - use gentler animation
       else {
@@ -786,7 +805,7 @@ function smoothScrollToBottom() {
         // Use a custom animation for more control
         const startTime = performance.now();
         const startScrollTop = elements.messageArea.scrollTop;
-        const duration = 400; // Longer animation for smoother feel
+        const duration = 800; // Longer animation for very smooth feel
 
         function scrollAnimation(currentTime) {
           const elapsedTime = currentTime - startTime;
@@ -795,8 +814,11 @@ function smoothScrollToBottom() {
             return;
           }
 
-          // Ease-out animation curve for natural deceleration
-          const progress = 1 - Math.pow(1 - elapsedTime / duration, 3);
+          // Enhanced ease-out animation curve for extra smooth deceleration
+          // Using a custom easing function that starts faster and ends slower
+          const t = elapsedTime / duration;
+          const progress = 1 - Math.pow(1 - t, 4); // Increased power for smoother ending
+          
           elements.messageArea.scrollTop = startScrollTop + (targetScrollTop - startScrollTop) * progress;
           requestAnimationFrame(scrollAnimation);
         }
