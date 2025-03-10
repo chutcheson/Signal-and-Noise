@@ -608,8 +608,10 @@ function addMessage(type, role, content) {
   
   elements.messageArea.appendChild(messageDiv);
   
-  // Scroll to bottom
-  elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
+  // Scroll to bottom with a small delay to ensure proper rendering
+  setTimeout(() => {
+    elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
+  }, 50);
 }
 
 // Add a guess message with correct/incorrect indication
@@ -640,8 +642,10 @@ function addGuessMessage(type, role, guess, correct) {
   
   elements.messageArea.appendChild(messageDiv);
   
-  // Scroll to bottom
-  elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
+  // Scroll to bottom with a small delay to ensure proper rendering
+  setTimeout(() => {
+    elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
+  }, 50);
 }
 
 // Remove thinking messages from the UI

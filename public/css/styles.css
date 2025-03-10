@@ -255,7 +255,7 @@ label {
   gap: 20px;
   flex: 1;
   margin: 20px 0;
-  max-height: calc(85vh - 150px);
+  max-height: calc(85vh - 130px); /* Slightly adjust for better spacing */
   min-height: 0; /* Important for grid items to respect container height */
   overflow: hidden; /* Prevent overall expansion */
 }
@@ -327,7 +327,7 @@ label {
 .message-area {
   background-color: #f7f4ed; /* Slightly different color for canvas */
   border: 2px solid var(--text-color);
-  padding: 25px;
+  padding: 25px 25px 35px 25px; /* Extra padding at bottom */
   position: relative;
   box-shadow: 6px 6px 0 var(--text-color);
   overflow-y: auto;
@@ -444,7 +444,7 @@ label {
 .history-panel {
   background-color: var(--card-background);
   border: 2px solid var(--text-color);
-  padding: 20px;
+  padding: 20px 20px 30px 20px; /* Extra padding at bottom */
   display: flex;
   flex-direction: column;
   box-shadow: 6px 6px 0 var(--text-color);
@@ -483,6 +483,7 @@ label {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding-bottom: 15px; /* Extra padding at the bottom of the list */
 }
 
 .round-item {
