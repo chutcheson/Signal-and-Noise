@@ -74,6 +74,8 @@ const elements = {
   secretWord: document.getElementById('secret-word'),
   finalSenderScore: document.getElementById('final-sender-score'),
   finalObserverScore: document.getElementById('final-observer-score'),
+  finalModelOneName: document.getElementById('final-model-one-name'),
+  finalModelTwoName: document.getElementById('final-model-two-name'),
   winningTeam: document.getElementById('winning-team'),
   continueViewingBtn: document.getElementById('continue-viewing-btn'),
   newGameBtn: document.getElementById('new-game-btn')
@@ -94,9 +96,18 @@ function updateScoreDisplay() {
 
 // Update the team labels in the header
 function updateTeamLabels() {
-  // Update team names to match model numbers instead of roles
-  document.querySelector('.team-score:nth-child(1) .team-name').textContent = 'Model One';
-  document.querySelector('.team-score:nth-child(3) .team-name').textContent = 'Model Two';
+  // This will be called after models are selected
+  document.addEventListener('modelsSelected', () => {
+    if (gameState.modelOne && gameState.modelTwo) {
+      // Get shortened model names with number indicators
+      const modelOneName = `${getShortenedModelName(gameState.modelOne)} (#1)`;
+      const modelTwoName = `${getShortenedModelName(gameState.modelTwo)} (#2)`;
+      
+      // Update the header labels
+      document.querySelector('.team-score:nth-child(1) .team-name').textContent = modelOneName;
+      document.querySelector('.team-score:nth-child(3) .team-name').textContent = modelTwoName;
+    }
+  });
 }
 
 // Load available models from the API
@@ -163,6 +174,9 @@ async function handleGameStart(event) {
   // Update UI
   elements.setupScreen.style.display = 'none';
   elements.gameScreen.style.display = 'block';
+  
+  // Trigger custom event to update team labels with model names
+  document.dispatchEvent(new Event('modelsSelected'));
   
   // Update the model displays based on their current roles
   updateModelDisplays();
@@ -515,14 +529,22 @@ async function runReceiverResponsePhase(senderMessage, receiverGuessData) {
 
 // End the game and show results
 function endGame() {
+  // Update scores
   elements.secretWord.textContent = gameState.secret;
   elements.finalSenderScore.textContent = gameState.scores.modelOne;
   elements.finalObserverScore.textContent = gameState.scores.modelTwo;
   
+  // Set model names in results
+  const modelOneName = `${getShortenedModelName(gameState.modelOne)} (#1)`;
+  const modelTwoName = `${getShortenedModelName(gameState.modelTwo)} (#2)`;
+  elements.finalModelOneName.textContent = modelOneName;
+  elements.finalModelTwoName.textContent = modelTwoName;
+  
+  // Show winner
   if (gameState.scores.modelOne > gameState.scores.modelTwo) {
-    elements.winningTeam.textContent = 'Model One Wins!';
+    elements.winningTeam.textContent = `${modelOneName} Wins!`;
   } else if (gameState.scores.modelTwo > gameState.scores.modelOne) {
-    elements.winningTeam.textContent = 'Model Two Wins!';
+    elements.winningTeam.textContent = `${modelTwoName} Wins!`;
   } else {
     elements.winningTeam.textContent = "It's a Tie!";
   }
