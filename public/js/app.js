@@ -614,6 +614,12 @@ function endGame() {
       // Remove the button itself
       playAgainBtn.remove();
       
+      // Clear round history
+      elements.roundHistory.innerHTML = '';
+      
+      // Reset message area
+      elements.messageArea.innerHTML = '';
+      
       // Remove game-active class to revert to normal layout
       document.querySelector('.app-container').classList.remove('game-active');
     });
