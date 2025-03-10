@@ -37,6 +37,7 @@ const gameState = {
     secret: '',
     outcome: null
   },
+  hasUnreadMessages: false,
   // Returns the current model for Sender/Receiver role (alternates each round)
   getCurrentSenderReceiverModel: function() {
     return this.currentRound % 2 === 1 ? this.modelOne : this.modelTwo;
@@ -81,11 +82,49 @@ const elements = {
   newGameBtn: document.getElementById('new-game-btn')
 };
 
+// Create the new message indicator element
+function createNewMessageIndicator() {
+  // Check if it already exists
+  if (document.getElementById('new-message-indicator')) return;
+  
+  const indicator = document.createElement('div');
+  indicator.id = 'new-message-indicator';
+  indicator.className = 'new-message-indicator';
+  indicator.textContent = 'New Messages ↓';
+  
+  // Add click handler to scroll to bottom and hide indicator
+  indicator.addEventListener('click', () => {
+    // Smooth scroll all the way to the bottom
+    elements.messageArea.scrollTo({
+      top: elements.messageArea.scrollHeight,
+      behavior: 'smooth'
+    });
+    
+    // Hide the indicator
+    indicator.style.display = 'none';
+    gameState.hasUnreadMessages = false;
+  });
+  
+  // Add it to the message area
+  elements.messageArea.appendChild(indicator);
+  elements.newMessageIndicator = indicator;
+}
+
 // Initialize the game
 async function initGame() {
   await loadModels();
   attachEventListeners();
   updateTeamLabels();
+  createNewMessageIndicator();
+  
+  // Add scroll event listener to message area
+  elements.messageArea.addEventListener('scroll', () => {
+    // If user scrolls to bottom, hide the new message indicator
+    if (isScrolledToBottom() && gameState.hasUnreadMessages) {
+      elements.newMessageIndicator.style.display = 'none';
+      gameState.hasUnreadMessages = false;
+    }
+  });
 }
 
 // Update the score display based on current scores
@@ -627,6 +666,15 @@ function addMessage(type, role, content) {
   
   elements.messageArea.appendChild(messageDiv);
   
+  // Check if we should show the new message indicator
+  if (!isScrolledToBottom() && viewingRoundIndex === -1 && type !== 'thinking') {
+    // Only show indicator for real messages, not temporary thinking messages
+    gameState.hasUnreadMessages = true;
+    if (elements.newMessageIndicator) {
+      elements.newMessageIndicator.style.display = 'block';
+    }
+  }
+  
   // Scroll to bottom with a small delay to ensure proper rendering and animation
   setTimeout(() => {
     smoothScrollToBottom();
@@ -661,6 +709,14 @@ function addGuessMessage(type, role, guess, correct) {
   
   elements.messageArea.appendChild(messageDiv);
   
+  // Check if we should show the new message indicator
+  if (!isScrolledToBottom() && viewingRoundIndex === -1) {
+    gameState.hasUnreadMessages = true;
+    if (elements.newMessageIndicator) {
+      elements.newMessageIndicator.style.display = 'block';
+    }
+  }
+  
   // Scroll to bottom with a small delay to ensure proper rendering and animation
   setTimeout(() => {
     smoothScrollToBottom();
@@ -684,17 +740,29 @@ function removeThinkingMessages() {
   removeTempThinkingMessages();
 }
 
+// Check if user is scrolled to bottom or very close to it
+function isScrolledToBottom() {
+  const tolerance = 50; // Pixels from bottom to still be considered "at bottom"
+  const scrollPosition = elements.messageArea.scrollTop + elements.messageArea.clientHeight;
+  const scrollHeight = elements.messageArea.scrollHeight;
+  
+  return scrollHeight - scrollPosition <= tolerance;
+}
+
 // Smooth scroll to the bottom of the message area
 function smoothScrollToBottom() {
-  // Use smooth scrolling when available
-  if ('scrollBehavior' in document.documentElement.style) {
-    elements.messageArea.scrollTo({
-      top: elements.messageArea.scrollHeight,
-      behavior: 'smooth'
-    });
-  } else {
-    // Fallback for browsers that don't support smooth scrolling
-    elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
+  // Only scroll if user is already at or near the bottom
+  if (isScrolledToBottom()) {
+    // Use smooth scrolling when available
+    if ('scrollBehavior' in document.documentElement.style) {
+      elements.messageArea.scrollTo({
+        top: elements.messageArea.scrollHeight,
+        behavior: 'smooth'
+      });
+    } else {
+      // Fallback for browsers that don't support smooth scrolling
+      elements.messageArea.scrollTop = elements.messageArea.scrollHeight;
+    }
   }
 }
 
