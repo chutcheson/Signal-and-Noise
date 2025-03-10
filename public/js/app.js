@@ -917,7 +917,7 @@ function updateRoundHistory() {
     
     const roundWord = document.createElement('div');
     roundWord.className = 'round-word';
-    roundWord.textContent = gameState.secret;
+    roundWord.textContent = gameState.currentRoundData.secret || gameState.secret;
     
     const roundStatus = document.createElement('div');
     roundStatus.className = 'round-result in-progress';
