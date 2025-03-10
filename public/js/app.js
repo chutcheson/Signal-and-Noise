@@ -289,7 +289,7 @@ async function runSenderPhase() {
   
   // Show loading message only if viewing current round
   if (viewingRoundIndex === -1) {
-    addMessage('thinking', 'Sender', 'Thinking about how to communicate the secret...');
+    addMessage('thinking-sender', 'Sender', 'Thinking about how to communicate the secret...');
   }
   
   try {
@@ -638,9 +638,9 @@ function endGame() {
 function addMessage(type, role, content) {
   const messageDiv = document.createElement('div');
   
-  if (type === 'thinking') {
-    // Temporary loading messages
-    messageDiv.className = `message thinking`;
+  if (type === 'thinking' || type === 'thinking-sender') {
+    // Temporary loading messages - use the exact type passed in
+    messageDiv.className = `message ${type}`;
   } else if (type === 'reasoning') {
     // Reasoning messages get their own distinct styling
     messageDiv.className = `message reasoning`;
@@ -727,9 +727,17 @@ function addGuessMessage(type, role, guess, correct) {
 function removeTempThinkingMessages() {
   // Only remove thinking messages that don't have "Reasoning" in their text
   // These are the temporary loading messages, not the actual reasoning content
-  const tempThinkingMessages = Array.from(elements.messageArea.querySelectorAll('.message.thinking')).filter(msg => {
-    const roleLabel = msg.querySelector('.role-label');
-    return roleLabel && !roleLabel.textContent.includes('Reasoning');
+  
+  // Get all thinking messages (both regular and sender-specific)
+  const thinkingSelectors = ['.message.thinking', '.message.thinking-sender'];
+  const tempThinkingMessages = [];
+  
+  thinkingSelectors.forEach(selector => {
+    const messages = Array.from(elements.messageArea.querySelectorAll(selector)).filter(msg => {
+      const roleLabel = msg.querySelector('.role-label');
+      return roleLabel && !roleLabel.textContent.includes('Reasoning');
+    });
+    tempThinkingMessages.push(...messages);
   });
   
   tempThinkingMessages.forEach(msg => msg.remove());

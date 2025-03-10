@@ -488,6 +488,18 @@ label {
   transform-origin: bottom right; /* Animation from right side */
 }
 
+/* Sender-specific thinking message on left side */
+.message.thinking-sender {
+  border: 1px dashed var(--text-color);
+  background-color: rgba(174, 108, 88, 0.05); /* Slight accent color tint */
+  opacity: 0.75;
+  align-self: flex-start; /* Left-aligned */
+  max-width: 50%; /* Slightly narrower than regular messages */
+  margin-left: 10px; /* Match indentation of sender messages */
+  font-style: italic; /* Italic text like reasoning */
+  transform-origin: bottom left; /* Animation from left side */
+}
+
 .message.reasoning {
   border: 1px dashed var(--text-color);
   background-color: rgba(0, 0, 0, 0.03);
