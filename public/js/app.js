@@ -21,21 +21,37 @@ const config = {
 
 // Game state
 const gameState = {
-  senderReceiverModel: '',
-  observerModel: '',
+  modelOne: '',
+  modelTwo: '',
   currentRound: 1,
   currentLoop: 1,
   currentPhase: 'setup',
   secret: '',
   scores: {
-    senderReceiver: 0,
-    observer: 0
+    modelOne: 0,
+    modelTwo: 0
   },
   rounds: [],
   currentRoundData: {
     messages: [],
     secret: '',
     outcome: null
+  },
+  // Returns the current model for Sender/Receiver role (alternates each round)
+  getCurrentSenderReceiverModel: function() {
+    return this.currentRound % 2 === 1 ? this.modelOne : this.modelTwo;
+  },
+  // Returns the current model for Observer role (alternates each round)
+  getCurrentObserverModel: function() {
+    return this.currentRound % 2 === 1 ? this.modelTwo : this.modelOne;
+  },
+  // Returns which model is currently playing as Sender/Receiver
+  getCurrentSenderReceiverModelName: function() {
+    return this.currentRound % 2 === 1 ? "Model One" : "Model Two";
+  },
+  // Returns which model is currently playing as Observer
+  getCurrentObserverModelName: function() {
+    return this.currentRound % 2 === 1 ? "Model Two" : "Model One";
   }
 };
 
@@ -44,8 +60,8 @@ const elements = {
   setupScreen: document.getElementById('setup-screen'),
   gameScreen: document.getElementById('game-screen'),
   setupForm: document.getElementById('setup-form'),
-  senderReceiverSelect: document.getElementById('sender-receiver-model'),
-  observerSelect: document.getElementById('observer-model'),
+  modelOneSelect: document.getElementById('model-one'),
+  modelTwoSelect: document.getElementById('model-two'),
   roundNumber: document.getElementById('round-number'),
   gameWord: document.getElementById('game-word'),
   senderReceiverDisplay: document.getElementById('sender-receiver-display'),
@@ -67,6 +83,20 @@ const elements = {
 async function initGame() {
   await loadModels();
   attachEventListeners();
+  updateTeamLabels();
+}
+
+// Update the score display based on current scores
+function updateScoreDisplay() {
+  elements.senderReceiverScore.textContent = gameState.scores.modelOne;
+  elements.observerScore.textContent = gameState.scores.modelTwo;
+}
+
+// Update the team labels in the header
+function updateTeamLabels() {
+  // Update team names to match model numbers instead of roles
+  document.querySelector('.team-score:nth-child(1) .team-name').textContent = 'Model One';
+  document.querySelector('.team-score:nth-child(3) .team-name').textContent = 'Model Two';
 }
 
 // Load available models from the API
@@ -119,22 +149,30 @@ async function handleGameStart(event) {
   event.preventDefault();
   
   // Get selected models
-  gameState.senderReceiverModel = elements.senderReceiverSelect.value;
-  gameState.observerModel = elements.observerSelect.value;
+  gameState.modelOne = elements.modelOneSelect.value;
+  gameState.modelTwo = elements.modelTwoSelect.value;
   
   // Reset game state
   gameState.currentRound = 1;
-  gameState.scores = { senderReceiver: 0, observer: 0 };
+  gameState.scores = { modelOne: 0, modelTwo: 0 };
   gameState.rounds = [];
   
   // Update UI
   elements.setupScreen.style.display = 'none';
   elements.gameScreen.style.display = 'block';
-  elements.senderReceiverDisplay.textContent = getShortenedModelName(gameState.senderReceiverModel);
-  elements.observerDisplay.textContent = getShortenedModelName(gameState.observerModel);
+  
+  // Update the model displays based on their current roles
+  updateModelDisplays();
   
   // Start the first round
   await startNewRound();
+}
+
+// Update the model displays based on current round (which defines the roles)
+function updateModelDisplays() {
+  // Update who's currently Sender/Receiver vs Observer
+  elements.senderReceiverDisplay.textContent = getShortenedModelName(gameState.getCurrentSenderReceiverModel());
+  elements.observerDisplay.textContent = getShortenedModelName(gameState.getCurrentObserverModel());
 }
 
 // Get shortened model name for display
@@ -195,7 +233,7 @@ async function runSenderPhase() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: gameState.senderReceiverModel,
+        model: gameState.getCurrentSenderReceiverModel(),
         secret: gameState.secret,
         receiverMessage,
         loop: gameState.currentLoop
@@ -240,7 +278,7 @@ async function runObserverPhase(senderMessage) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: gameState.observerModel,
+        model: gameState.getCurrentObserverModel(),
         secret: gameState.secret,
         senderMessage
       })
@@ -265,9 +303,17 @@ async function runObserverPhase(senderMessage) {
     
     // Check if Observer guessed correctly
     if (data.correct) {
-      // Observer wins the round
-      gameState.scores.observer++;
-      elements.observerScore.textContent = gameState.scores.observer;
+      // Observer wins the round - increment score for whichever model is Observer
+      if (gameState.currentRound % 2 === 1) {
+        // Model Two is Observer in odd rounds
+        gameState.scores.modelTwo++;
+      } else {
+        // Model One is Observer in even rounds
+        gameState.scores.modelOne++;
+      }
+      
+      // Update score display
+      updateScoreDisplay();
       
       // Update round data
       gameState.currentRoundData.outcome = 'observer';
@@ -280,13 +326,15 @@ async function runObserverPhase(senderMessage) {
       
       // Check if game is over
       if (gameState.currentRound >= config.maxRounds || 
-          gameState.scores.observer >= Math.ceil(config.maxRounds / 2) ||
-          gameState.scores.senderReceiver >= Math.ceil(config.maxRounds / 2)) {
+          gameState.scores.modelOne >= Math.ceil(config.maxRounds / 2) ||
+          gameState.scores.modelTwo >= Math.ceil(config.maxRounds / 2)) {
         endGame();
       } else {
         // Wait a moment before starting new round
         setTimeout(() => {
           gameState.currentRound++;
+          // Update model displays for new round (swapped roles)
+          updateModelDisplays();
           startNewRound();
         }, 3000);
       }
@@ -314,7 +362,7 @@ async function runReceiverGuessPhase(senderMessage) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: gameState.senderReceiverModel,
+        model: gameState.getCurrentSenderReceiverModel(),
         secret: gameState.secret,
         senderMessage
       })
@@ -339,9 +387,17 @@ async function runReceiverGuessPhase(senderMessage) {
     
     // Check if Receiver guessed correctly
     if (data.correct) {
-      // Sender/Receiver team wins the round
-      gameState.scores.senderReceiver++;
-      elements.senderReceiverScore.textContent = gameState.scores.senderReceiver;
+      // Sender/Receiver team wins the round - increment score for whichever model is Sender/Receiver
+      if (gameState.currentRound % 2 === 1) {
+        // Model One is Sender/Receiver in odd rounds
+        gameState.scores.modelOne++;
+      } else {
+        // Model Two is Sender/Receiver in even rounds
+        gameState.scores.modelTwo++;
+      }
+      
+      // Update score display
+      updateScoreDisplay();
       
       // Update round data
       gameState.currentRoundData.outcome = 'receiver';
@@ -354,13 +410,15 @@ async function runReceiverGuessPhase(senderMessage) {
       
       // Check if game is over
       if (gameState.currentRound >= config.maxRounds || 
-          gameState.scores.observer >= Math.ceil(config.maxRounds / 2) ||
-          gameState.scores.senderReceiver >= Math.ceil(config.maxRounds / 2)) {
+          gameState.scores.modelOne >= Math.ceil(config.maxRounds / 2) ||
+          gameState.scores.modelTwo >= Math.ceil(config.maxRounds / 2)) {
         endGame();
       } else {
         // Wait a moment before starting new round
         setTimeout(() => {
           gameState.currentRound++;
+          // Update model displays for new round (swapped roles)
+          updateModelDisplays();
           startNewRound();
         }, 3000);
       }
@@ -378,13 +436,15 @@ async function runReceiverGuessPhase(senderMessage) {
         
         // Move to next round or end game
         if (gameState.currentRound >= config.maxRounds || 
-            gameState.scores.observer >= Math.ceil(config.maxRounds / 2) ||
-            gameState.scores.senderReceiver >= Math.ceil(config.maxRounds / 2)) {
+            gameState.scores.modelOne >= Math.ceil(config.maxRounds / 2) ||
+            gameState.scores.modelTwo >= Math.ceil(config.maxRounds / 2)) {
           endGame();
         } else {
           // Wait a moment before starting new round
           setTimeout(() => {
             gameState.currentRound++;
+            // Update model displays for new round (swapped roles)
+            updateModelDisplays();
             startNewRound();
           }, 3000);
         }
@@ -413,7 +473,7 @@ async function runReceiverResponsePhase(senderMessage, receiverGuessData) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: gameState.senderReceiverModel,
+        model: gameState.getCurrentSenderReceiverModel(),
         secret: gameState.secret,
         senderMessage,
         receiverGuess: receiverGuessData
@@ -453,13 +513,13 @@ async function runReceiverResponsePhase(senderMessage, receiverGuessData) {
 // End the game and show results
 function endGame() {
   elements.secretWord.textContent = gameState.secret;
-  elements.finalSenderScore.textContent = gameState.scores.senderReceiver;
-  elements.finalObserverScore.textContent = gameState.scores.observer;
+  elements.finalSenderScore.textContent = gameState.scores.modelOne;
+  elements.finalObserverScore.textContent = gameState.scores.modelTwo;
   
-  if (gameState.scores.senderReceiver > gameState.scores.observer) {
-    elements.winningTeam.textContent = 'Sender/Receiver Team Wins!';
-  } else if (gameState.scores.observer > gameState.scores.senderReceiver) {
-    elements.winningTeam.textContent = 'Observer Team Wins!';
+  if (gameState.scores.modelOne > gameState.scores.modelTwo) {
+    elements.winningTeam.textContent = 'Model One Wins!';
+  } else if (gameState.scores.modelTwo > gameState.scores.modelOne) {
+    elements.winningTeam.textContent = 'Model Two Wins!';
   } else {
     elements.winningTeam.textContent = "It's a Tie!";
   }
