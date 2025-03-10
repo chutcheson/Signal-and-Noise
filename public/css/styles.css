@@ -44,7 +44,8 @@ body {
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  padding-top: 5px;
 }
 
 /* Paper texture overlay for wabi-sabi look */
@@ -65,20 +66,15 @@ body::before {
   margin: 0 auto;
   padding: 20px;
   position: relative;
+  top: 0;
 }
 
 /* Only apply the full-screen styles when the game is active */
 .app-container.game-active {
-  width: 98%;
-  height: 98vh;
+  width: 95%;
+  height: 85vh;
   display: flex;
   flex-direction: column;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  padding: 10px 15px;
 }
 
 /* Header styles - Brutalist approach */
@@ -86,14 +82,11 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 5px 12px;
-  margin-bottom: 5px;
+  padding: 0 5px 12px;
+  margin-bottom: 10px;
   border-bottom: 3px solid var(--text-color);
   flex-shrink: 0;
-  background-color: var(--background-color);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  width: 100%;
 }
 
 h1 {
@@ -261,18 +254,18 @@ label {
 /* Game board styles */
 .game-board {
   display: grid;
-  grid-template-columns: 3.5fr 1fr;
+  grid-template-columns: 3fr 1fr;
   grid-template-rows: auto minmax(0, 1fr); /* Critical: second row will not grow beyond container */
-  gap: 15px;
+  gap: 20px;
   
   /* Fixed height with strict constraints */
-  height: calc(98vh - 75px);
-  max-height: calc(98vh - 75px);
+  height: calc(85vh - 130px);
+  max-height: calc(85vh - 130px);
   min-height: 0;
   
   /* Critical: prevent the board from growing beyond allocated space */
   flex: 1 0 auto;
-  margin: 5px 0;
+  margin: 20px 0;
   
   /* Prevent any overflow expansion */
   overflow: hidden;
