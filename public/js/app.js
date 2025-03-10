@@ -198,6 +198,7 @@ async function handleGameStart(event) {
   gameState.rounds = [];
   
   // Reset viewing index to follow current round
+  // This is only done at game start, not when rounds change
   viewingRoundIndex = -1;
   
   // Update UI
@@ -956,15 +957,9 @@ function updateRoundHistory() {
     elements.roundHistory.appendChild(currentRoundItem);
   }
   
-  // Only refresh the display if we're viewing the current round
-  // otherwise we want to keep showing the round the user selected
-  if (viewingRoundIndex === -1) {
-    // Display current round if that's what we're viewing
-    displayCurrentRoundMessages();
-  } else if (viewingRoundIndex >= 0 && viewingRoundIndex < gameState.rounds.length) {
-    // Keep displaying the specific round we're viewing
-    displayRoundMessages(gameState.rounds[viewingRoundIndex]);
-  }
+  // The function stops here without updating the display
+  // We no longer automatically update the displayed messages when history panel updates
+  // This allows users to keep viewing a specific round even when a new round starts
 }
 
 // Display messages from the current active round
