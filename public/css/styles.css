@@ -75,6 +75,7 @@ body::before {
   height: 85vh;
   display: flex;
   flex-direction: column;
+  padding-bottom: 100px; /* Make space for the fixed footer */
 }
 
 /* Header styles - Brutalist approach */
@@ -750,12 +751,15 @@ label {
 
 /* Footer style for game over summary */
 .result-summary.result-footer {
-  position: static;
-  grid-column: 1 / -1;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   max-width: 100%;
   width: 100%;
-  margin-top: 20px;
-  z-index: 5;
+  margin: 0;
+  padding: 0 20px 20px;
+  z-index: 50;
 }
 
 .result-container {
@@ -783,6 +787,9 @@ label {
   align-items: center;
   text-align: left;
   padding: 15px 20px;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+  border-bottom: none;
+  border-radius: 15px 15px 0 0;
 }
 
 .result-footer h2 {
@@ -806,6 +813,7 @@ label {
   justify-content: flex-end;
   margin-top: 10px;
 }
+
 
 .result-actions {
   display: flex;
