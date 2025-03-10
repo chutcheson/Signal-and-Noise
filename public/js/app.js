@@ -954,7 +954,6 @@ function updateRoundHistory() {
     displayRoundMessages(gameState.rounds[viewingRoundIndex]);
   }
 }
-}
 
 // Display messages from the current active round
 function displayCurrentRoundMessages() {
