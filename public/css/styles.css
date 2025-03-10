@@ -70,7 +70,7 @@ body::before {
 /* Only apply the full-screen styles when the game is active */
 .app-container.game-active {
   width: 95%;
-  height: 95vh;
+  height: 85vh;
   display: flex;
   flex-direction: column;
 }
@@ -255,7 +255,7 @@ label {
   gap: 20px;
   flex: 1;
   margin: 20px 0;
-  max-height: calc(95vh - 150px);
+  max-height: calc(85vh - 150px);
 }
 
 .game-info {
