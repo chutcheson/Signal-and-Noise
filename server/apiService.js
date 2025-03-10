@@ -4,15 +4,29 @@ const OpenAI = require('openai');
 const Anthropic = require('@anthropic-ai/sdk');
 const wordService = require('./wordService');
 
-// Get API keys from environment variables or files
+// Get API keys from multiple sources in order of preference
 let OPENAI_API_KEY, ANTHROPIC_API_KEY;
 
 try {
-  // Try to read from environment variables first
-  OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-  ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  // 1. Try to load from config.js first (this is the preferred method)
+  let config;
+  try {
+    config = require('../config');
+    OPENAI_API_KEY = config.openaiApiKey;
+    ANTHROPIC_API_KEY = config.anthropicApiKey;
+    
+    // Check if the keys are still placeholder values
+    if (OPENAI_API_KEY === 'your_openai_api_key_here') OPENAI_API_KEY = null;
+    if (ANTHROPIC_API_KEY === 'your_anthropic_api_key_here') ANTHROPIC_API_KEY = null;
+  } catch (configError) {
+    console.log('No config.js file found or there was an error in the file. Trying other sources.');
+  }
   
-  // If not in env vars, try to read from files
+  // 2. If keys not found in config, try environment variables
+  if (!OPENAI_API_KEY) OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  if (!ANTHROPIC_API_KEY) ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  
+  // 3. As a last resort, try to read from files in materials folder
   if (!OPENAI_API_KEY) {
     const openaiKeyPath = path.join(__dirname, '../materials/openai_api_key.txt');
     if (fs.existsSync(openaiKeyPath)) {

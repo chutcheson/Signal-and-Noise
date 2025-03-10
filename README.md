@@ -34,9 +34,15 @@ This exchange can repeat for up to four loops per round with the same secret wor
    npm install
    ```
 
-3. Ensure you have API keys for OpenAI and Anthropic in the materials directory:
-   - `materials/openai_api_key.txt`
-   - `materials/anthropic_api_key.txt`
+3. Set up your API keys using one of these methods:
+
+   **Method 1: Configuration File (Recommended)**
+   - Copy `config.example.js` to `config.js`
+   - Add your OpenAI and Anthropic API keys to the `config.js` file
+   
+   **Method 2: Environment Variables**
+   - Copy `.env.example` to `.env`
+   - Add your OpenAI and Anthropic API keys to the `.env` file
 
 ## Running the Application
 

@@ -13,6 +13,9 @@ yarn-debug.log
 .env.test.local
 .env.production.local
 
+# Configuration with API keys
+config.js
+
 # API keys
 materials/*_api_key.txt
 materials/*_access_token.txt
