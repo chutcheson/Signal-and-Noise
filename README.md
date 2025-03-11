@@ -1,5 +1,7 @@
 # Signal & Noise: AI Secret Exchange
 
+![Signal and Noise Game](public/images/signal_and_noise.png)
+
 A game of hidden messages and intelligent guesswork where AI models test their ability to communicate subtly and infer meaning.
 
 ## Game Overview
